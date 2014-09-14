@@ -1,0 +1,29 @@
+name: ${project.name}
+version: ${project.version}
+main: org.bitbucket.ucchy.ld.LandmineDetectors
+description: LandmineDetectors minigame plugin
+author: ucchy
+
+commands:
+  landminedetectors:
+    description: Commands of LandmineDetectors
+    aliases: [ld]
+    usage: |
+           /<command> start [difficulty] - Start new game.
+           /<command> cancel - Cancel game.
+           /<command> reload - Reload config data.
+    permission: LandmineDetectors.command
+    permission-message: 'You don''t have a permission "<permission>".'
+
+permissions:
+  LandmineDetectors.command:
+    description: Permission of command.
+    default: true
+  LandmineDetectors.start:
+    description: Permission of start command.
+    default: true
+  'LandmineDetectors.*':
+    description: All of permissions.
+    children:
+      LandmineDetectors.command: true
+      LandmineDetectors.start: true
