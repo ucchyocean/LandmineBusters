@@ -6,6 +6,7 @@
 package org.bitbucket.ucchy.ld;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -25,13 +26,15 @@ public class GameSession {
     private Location tempLoc;
 
     private Player player;
-    private FieldData field;
     private int size;
     private int mine;
     private GameSessionPhase phase;
 
     private int grid_x;
     private int grid_z;
+    private FieldData field;
+
+    private long startTime;
 
     /**
      * コンストラクタ
@@ -42,7 +45,6 @@ public class GameSession {
     public GameSession(Player player, int size, int mine) {
 
         this.player = player;
-        this.field = new FieldData(size, mine);
         this.size = size;
         this.mine = mine;
 
@@ -58,12 +60,15 @@ public class GameSession {
         phase = GameSessionPhase.PREPARE;
 
         // グリッドをマネージャから取得する
-        int[] grid = LandmineDetectors.getGameSessionManager().getOpenGrid();
+        int[] grid = LandmineDetectors.getInstance().getGameSessionManager().getOpenGrid();
         this.grid_x = grid[0];
         this.grid_z = grid[1];
 
         // グリッドにゲーム用フィールドを生成する
-        Location startLoc = field.applyField(grid_x * 64, grid_z * 64);
+        Location origin = new Location(
+                LandmineDetectors.getInstance().getWorld(), grid_x * 64, 65, grid_z * 64);
+        this.field = new FieldData(size, mine, origin);
+        Location startLoc = field.applyField();
 
         // 元いた場所を記憶する
         tempLoc = player.getLocation();
@@ -89,7 +94,6 @@ public class GameSession {
         runInGame();
     }
 
-
     /**
      * ゲームのIN_GAMEフェーズを実行する
      */
@@ -97,7 +101,16 @@ public class GameSession {
 
         phase = GameSessionPhase.IN_GAME;
 
-        // TODO 何かのメッセージ（ゲームガイド的な）
+        // 開始時刻を記録する
+        startTime = System.currentTimeMillis();
+
+        // メッセージを流す
+        player.sendMessage(
+                "フィールドに埋まっている地雷にレッドストーントーチを立てて、"
+                + "全て無効化してください。");
+        player.sendMessage(
+                "経験値バーは一番近い地雷との距離を、"
+                + "レベルは周囲のマスにある地雷の個数を示します。");
     }
 
     /**
@@ -113,9 +126,14 @@ public class GameSession {
         // もといた場所に戻す
         player.teleport(tempLoc, TeleportCause.PLUGIN);
 
-        // TODO 賞金を与える
+        // セッションマネージャから登録を削除する
+        LandmineDetectors.getInstance().getGameSessionManager().removeSession(player);
 
-        // TODO 何かのメッセージ（またきてね！）
+        // メッセージを流す
+        player.sendMessage("ゲームに勝利しました！");
+
+        // リザルトを表示する
+        sendResult(true);
     }
 
     /**
@@ -125,13 +143,20 @@ public class GameSession {
 
         phase = GameSessionPhase.LOSE;
 
-        // インベントリを復帰する
+        // インベントリを復帰する TODO リスポーン後にする必要があるかも
         restoreInventory();
 
-        // もといた場所に戻す
+        // もといた場所に戻す TODO リスポーン後にする必要があるかも
         player.teleport(tempLoc, TeleportCause.PLUGIN);
 
-        // TODO 何かのメッセージ（またきてね！）
+        // セッションマネージャから登録を削除する
+        LandmineDetectors.getInstance().getGameSessionManager().removeSession(player);
+
+        // メッセージを流す
+        player.sendMessage("地雷を踏んでしまった・・・");
+
+        // リザルトを表示する
+        sendResult(false);
     }
 
     /**
@@ -147,7 +172,11 @@ public class GameSession {
         // もといた場所に戻す
         player.teleport(tempLoc, TeleportCause.PLUGIN);
 
-        // TODO 何かのメッセージ（ゲームがキャンセルされました）
+        // セッションマネージャから登録を削除する
+        LandmineDetectors.getInstance().getGameSessionManager().removeSession(player);
+
+        // メッセージを流す
+        player.sendMessage("ゲームがキャンセルされました。");
     }
 
     /**
@@ -212,6 +241,44 @@ public class GameSession {
 
         player.setLevel(tempLevel);
         player.setExp(tempExp);
+    }
+
+    private int sendResult(boolean isClear) {
+
+        int point = 0;
+
+        // 残りタイムポイントを加算（クリア時のみ）
+        int time = (int)((System.currentTimeMillis() - startTime) / 1000);
+        int timePoint = mine * 20 - time;
+        if ( !isClear || timePoint < 0 ) timePoint = 0;
+        point += timePoint;
+
+        // 踏破率ポイントを加算
+//        double stepOnPercent = field.getStepOnPercentage();
+//        int stepOnPoint = (int)(stepOnPercent * 100);
+//        point += stepOnPoint;
+
+        // 地雷除去ポイントを加算
+        int deactive = field.deactiveCount();
+        int deactivePoint = deactive * 10;
+        point += deactivePoint;
+
+        player.sendMessage("==========リザルト==========");
+        if ( isClear ) {
+            player.sendMessage(ChatColor.RED + "クリア！！");
+        } else {
+            player.sendMessage(ChatColor.BLUE + "失敗。。。");
+        }
+        player.sendMessage(String.format(
+                "タイム: %d秒 " + ChatColor.GREEN + "(+%dP)", time, timePoint));
+//        player.sendMessage(String.format(
+//                "踏破率: %.1f％ " + ChatColor.GREEN + "(+%dP)", stepOnPercent*100, stepOnPoint));
+        player.sendMessage(String.format(
+                "除去した地雷: %d個 " + ChatColor.GREEN + "(+%dP)", deactive, deactivePoint));
+        player.sendMessage(ChatColor.GOLD + "トータルスコア: " + point + "P");
+        player.sendMessage("==========================");
+
+        return point;
     }
 
     /**

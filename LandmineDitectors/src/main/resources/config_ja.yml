@@ -3,3 +3,20 @@
 # @license    LGPLv3
 # @copyright  Copyright ucchy 2014
 
+# 難易度調節です。easyとnormalとhardを定義できます。
+# size -> フィールドの広さ（1辺の長さ）
+# mine -> 埋まっている地雷の個数
+difficulty:
+  easy:
+    size: 10
+    mine: 5
+  normal:
+    size: 12
+    mine: 12
+  hard:
+    size: 15
+    mine: 30
+
+# 開始時の遅延時間（秒）です。不正防止にご利用ください。
+# 不要な場合は、0を指定してください。
+startDelay: 5

@@ -5,6 +5,7 @@
  */
 package org.bitbucket.ucchy.ld;
 
+import java.io.File;
 import java.util.List;
 import java.util.Random;
 
@@ -22,9 +23,11 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class LandmineDetectors extends JavaPlugin {
 
-    private static final String WORLD_NAME = "LandmineDetectors";
+    protected static final String WORLD_NAME = "LandmineDetectors";
 
     private static LandmineDetectors instance;
+
+    private LDConfig config;
     private World world;
     private GameSessionManager manager;
     private LDCommand command;
@@ -38,6 +41,9 @@ public class LandmineDetectors extends JavaPlugin {
 
         instance = this;
 
+        // コンフィグのロード
+        config = new LDConfig(this);
+
         // ワールドのロード
         world = getServer().getWorld(WORLD_NAME);
         if ( world == null ) {
@@ -49,6 +55,9 @@ public class LandmineDetectors extends JavaPlugin {
 
         // コマンドの準備
         command = new LDCommand();
+
+        // リスナーの登録
+        getServer().getPluginManager().registerEvents(new LDListener(), this);
     }
 
     /**
@@ -89,22 +98,59 @@ public class LandmineDetectors extends JavaPlugin {
             }
         });
 
-        return getServer().createWorld(creator);
+        World world = getServer().createWorld(creator);
+
+        // ずっと昼にする
+        world.setTime(6000);
+        world.setGameRuleValue("doDaylightCycle", "false");
+
+        // MOBが沸かないようにする
+        world.setGameRuleValue("doMobSpawning", "false");
+
+        // 天候を晴れにする
+        world.setStorm(false);
+        world.setThundering(false);
+
+        return world;
+    }
+
+    /**
+     * LandmineDetectorsのコンフィグデータを取得する
+     * @return
+     */
+    protected LDConfig getLDConfig() {
+        return config;
     }
 
     /**
      * プラグイン用のワールドを取得する
      * @return プラグイン用のワールド
      */
-    public static World getWorld() {
-        return instance.world;
+    protected World getWorld() {
+        return world;
     }
 
     /**
      * ゲームセッションマネージャを取得する
      * @return ゲームセッションマネージャ
      */
-    public static GameSessionManager getGameSessionManager() {
-        return instance.manager;
+    protected GameSessionManager getGameSessionManager() {
+        return manager;
+    }
+
+    /**
+     * このプラグインのJarファイルを返す
+     * @return
+     */
+    protected File getJarFile() {
+        return getFile();
+    }
+
+    /**
+     * インスタンスを返す
+     * @return
+     */
+    protected static LandmineDetectors getInstance() {
+        return instance;
     }
 }

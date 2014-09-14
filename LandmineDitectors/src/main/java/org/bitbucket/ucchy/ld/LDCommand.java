@@ -72,7 +72,7 @@ public class LDCommand implements TabExecutor {
         }
 
         Player player = (Player)sender;
-        GameSessionManager manager = LandmineDetectors.getGameSessionManager();
+        GameSessionManager manager = LandmineDetectors.getInstance().getGameSessionManager();
 
         // 既にセッション中ならエラー終了する
         if ( manager.isPlayerInGame(player) ) {
@@ -81,11 +81,27 @@ public class LDCommand implements TabExecutor {
         }
 
         // セッションの作成
-        manager.makeNewSession(player, 15, 30);
+        String difficulty = "normal";
+        if ( args.length >= 2 && args[1].equalsIgnoreCase("easy") ) {
+            difficulty = "easy";
+        } else if ( args.length >= 2 && args[1].equalsIgnoreCase("hard") ) {
+            difficulty = "hard";
+        }
+        LDConfig config = LandmineDetectors.getInstance().getLDConfig();
+        LDDifficultySetting setting = config.getDifficulty().get(difficulty);
+        manager.makeNewSession(player, setting.getSize(), setting.getMine());
 
         return true;
     }
 
+    /**
+     * cancelコマンド
+     * @param sender
+     * @param command
+     * @param label
+     * @param args
+     * @return
+     */
     private boolean doCancel(CommandSender sender, Command command, String label, String[] args) {
 
         // ゲーム外から実行された場合はエラー終了する
@@ -95,7 +111,7 @@ public class LDCommand implements TabExecutor {
         }
 
         Player player = (Player)sender;
-        GameSessionManager manager = LandmineDetectors.getGameSessionManager();
+        GameSessionManager manager = LandmineDetectors.getInstance().getGameSessionManager();
 
         // セッション中じゃないならエラー終了する
         if ( !manager.isPlayerInGame(player) ) {
