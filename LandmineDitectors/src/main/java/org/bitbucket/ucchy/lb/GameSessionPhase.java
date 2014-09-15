@@ -3,7 +3,7 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2014
  */
-package org.bitbucket.ucchy.ld;
+package org.bitbucket.ucchy.lb;
 
 /**
  * ゲームセッションの状態
