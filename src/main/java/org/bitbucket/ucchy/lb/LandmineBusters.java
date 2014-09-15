@@ -23,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class LandmineBusters extends JavaPlugin {
 
+    // TODO ワールド名が旧プラグイン名のままなので、いつか直す・・・
     protected static final String WORLD_NAME = "LandmineDetectors";
 
     private static LandmineBusters instance;
