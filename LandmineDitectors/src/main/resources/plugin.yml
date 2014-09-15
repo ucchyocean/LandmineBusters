@@ -11,6 +11,7 @@ commands:
     usage: |
            /<command> start [difficulty] - Start new game.
            /<command> cancel - Cancel game.
+           /<command> rank [difficulty] [num] - View ranking data.
            /<command> reload - Reload config data.
     permission: LandmineBusters.command
     permission-message: 'You don''t have a permission "<permission>".'
@@ -25,9 +26,13 @@ permissions:
   LandmineBusters.rank:
     description: Permission of rank command.
     default: true
+  LandmineBusters.reload:
+    description: Permission of reload command.
+    default: op
   'LandmineBusters.*':
     description: All of permissions.
     children:
       LandmineBusters.command: true
       LandmineBusters.start: true
       LandmineBusters.rank: true
+      LandmineBusters.reload: true

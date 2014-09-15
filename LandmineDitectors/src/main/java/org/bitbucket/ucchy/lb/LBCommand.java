@@ -38,6 +38,8 @@ public class LBCommand implements TabExecutor {
             return doCancel(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("rank") ) {
             return doRank(sender, command, label, args);
+        } else if ( args[0].equalsIgnoreCase("reload") ) {
+            return doReload(sender, command, label, args);
         }
 
         return false;
@@ -220,6 +222,27 @@ public class LBCommand implements TabExecutor {
             }
         }
 
+        return true;
+    }
+
+    /**
+     * reloadコマンド
+     * @param sender 
+     * @param command 
+     * @param label 
+     * @param args 
+     * @return
+     */
+    private boolean doReload(CommandSender sender, Command command, String label, String[] args) {
+        
+        // パーミッションチェック
+        if ( !sender.hasPermission(PERMISSION + "reload") ) {
+            sender.sendMessage(ChatColor.RED + "パーミッションが無いため実行できません。");
+            return true;
+        }
+
+        LandmineBusters.getInstance().getLBConfig().reloadConfig();
+        sender.sendMessage(ChatColor.AQUA + "コンフィグをリロードしました。");
         return true;
     }
 

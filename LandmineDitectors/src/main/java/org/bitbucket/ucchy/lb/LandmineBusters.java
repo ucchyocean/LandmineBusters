@@ -65,6 +65,22 @@ public class LandmineBusters extends JavaPlugin {
     }
 
     /**
+     * プラグインが無効化された時に呼び出されるメソッド
+     * @see org.bukkit.plugin.java.JavaPlugin#onDisable()
+     */
+    @Override
+    public void onDisable() {
+
+        // ゲーム中のセッションがある場合、全てキャンセルする
+        for ( GameSession session : manager.getAllSessions() ) {
+            if ( session.getPhase() == GameSessionPhase.PREPARE ||
+                    session.getPhase() == GameSessionPhase.IN_GAME ) {
+                session.runCancel();
+            }
+        }
+    }
+
+    /**
      * プラグインのコマンドが実行された時に呼び出されるメソッド
      * @see org.bukkit.plugin.java.JavaPlugin#onCommand(org.bukkit.command.CommandSender, org.bukkit.command.Command, java.lang.String, java.lang.String[])
      */

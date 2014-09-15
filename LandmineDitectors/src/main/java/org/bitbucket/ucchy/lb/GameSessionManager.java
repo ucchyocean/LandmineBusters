@@ -5,6 +5,7 @@
  */
 package org.bitbucket.ucchy.lb;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -147,5 +148,13 @@ public class GameSessionManager {
 
         return new int[]{20, 0};
         // 同時に840人が遊んでいるなら、この値が返されるが、まずそんなことはない。
+    }
+
+    /**
+     * 現在のセッションを全て返す
+     * @return 全てのセッション
+     */
+    public ArrayList<GameSession> getAllSessions() {
+        return new ArrayList<GameSession>(sessions.values());
     }
 }
