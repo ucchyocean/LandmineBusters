@@ -60,13 +60,13 @@ public class GameSession {
         phase = GameSessionPhase.PREPARE;
 
         // グリッドをマネージャから取得する
-        int[] grid = LandmineDetectors.getInstance().getGameSessionManager().getOpenGrid();
+        int[] grid = LandmineBusters.getInstance().getGameSessionManager().getOpenGrid();
         this.grid_x = grid[0];
         this.grid_z = grid[1];
 
         // グリッドにゲーム用フィールドを生成する
         Location origin = new Location(
-                LandmineDetectors.getInstance().getWorld(), grid_x * 64, 65, grid_z * 64);
+                LandmineBusters.getInstance().getWorld(), grid_x * 64, 65, grid_z * 64);
         this.field = new FieldData(size, mine, origin);
         Location startLoc = field.applyField();
 
@@ -127,7 +127,7 @@ public class GameSession {
         player.teleport(tempLoc, TeleportCause.PLUGIN);
 
         // セッションマネージャから登録を削除する
-        LandmineDetectors.getInstance().getGameSessionManager().removeSession(player);
+        LandmineBusters.getInstance().getGameSessionManager().removeSession(player);
 
         // メッセージを流す
         player.sendMessage("ゲームに勝利しました！");
@@ -150,7 +150,7 @@ public class GameSession {
         player.teleport(tempLoc, TeleportCause.PLUGIN);
 
         // セッションマネージャから登録を削除する
-        LandmineDetectors.getInstance().getGameSessionManager().removeSession(player);
+        LandmineBusters.getInstance().getGameSessionManager().removeSession(player);
 
         // メッセージを流す
         player.sendMessage("地雷を踏んでしまった・・・");
@@ -173,7 +173,7 @@ public class GameSession {
         player.teleport(tempLoc, TeleportCause.PLUGIN);
 
         // セッションマネージャから登録を削除する
-        LandmineDetectors.getInstance().getGameSessionManager().removeSession(player);
+        LandmineBusters.getInstance().getGameSessionManager().removeSession(player);
 
         // メッセージを流す
         player.sendMessage("ゲームがキャンセルされました。");

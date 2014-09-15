@@ -12,7 +12,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <files>
     <file>
-      <source>target/LandmineDetectors.jar</source>
+      <source>target/LandmineBusters.jar</source>
     </file>
   </files>
 

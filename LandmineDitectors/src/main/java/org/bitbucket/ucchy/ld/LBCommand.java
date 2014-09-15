@@ -14,10 +14,10 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 /**
- * LandmineDetectorsのコマンドクラス
+ * LandmineBustersのコマンドクラス
  * @author ucchy
  */
-public class LDCommand implements TabExecutor {
+public class LBCommand implements TabExecutor {
 
     private static final String PERMISSION = "LandmineDetectors.";
 
@@ -72,7 +72,7 @@ public class LDCommand implements TabExecutor {
         }
 
         Player player = (Player)sender;
-        GameSessionManager manager = LandmineDetectors.getInstance().getGameSessionManager();
+        GameSessionManager manager = LandmineBusters.getInstance().getGameSessionManager();
 
         // 既にセッション中ならエラー終了する
         if ( manager.isPlayerInGame(player) ) {
@@ -87,8 +87,8 @@ public class LDCommand implements TabExecutor {
         } else if ( args.length >= 2 && args[1].equalsIgnoreCase("hard") ) {
             difficulty = "hard";
         }
-        LDConfig config = LandmineDetectors.getInstance().getLDConfig();
-        LDDifficultySetting setting = config.getDifficulty().get(difficulty);
+        LBConfig config = LandmineBusters.getInstance().getLDConfig();
+        LBDifficultySetting setting = config.getDifficulty().get(difficulty);
         manager.makeNewSession(player, setting.getSize(), setting.getMine());
 
         return true;
@@ -111,7 +111,7 @@ public class LDCommand implements TabExecutor {
         }
 
         Player player = (Player)sender;
-        GameSessionManager manager = LandmineDetectors.getInstance().getGameSessionManager();
+        GameSessionManager manager = LandmineBusters.getInstance().getGameSessionManager();
 
         // セッション中じゃないならエラー終了する
         if ( !manager.isPlayerInGame(player) ) {

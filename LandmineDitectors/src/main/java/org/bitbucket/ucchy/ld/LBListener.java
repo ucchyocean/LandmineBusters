@@ -20,10 +20,10 @@ import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 /**
- * LandmineDetectorsのリスナークラス
+ * LandmineBustersのリスナークラス
  * @author ucchy
  */
-public class LDListener implements Listener {
+public class LBListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -31,7 +31,7 @@ public class LDListener implements Listener {
         Player player = event.getPlayer();
         Location location = player.getLocation();
         GameSessionManager manager =
-                LandmineDetectors.getInstance().getGameSessionManager();
+                LandmineBusters.getInstance().getGameSessionManager();
 
         // ゲーム中のプレイヤーでなければ無視する
         if ( !manager.isPlayerInGame(player) ) {
@@ -84,7 +84,7 @@ public class LDListener implements Listener {
 
         Player player = event.getPlayer();
         GameSessionManager manager =
-                LandmineDetectors.getInstance().getGameSessionManager();
+                LandmineBusters.getInstance().getGameSessionManager();
 
         // ゲーム中のプレイヤーでなければ無視する
         if ( !manager.isPlayerInGame(player) ) {
@@ -116,7 +116,7 @@ public class LDListener implements Listener {
 
         Player player = event.getPlayer();
         GameSessionManager manager =
-                LandmineDetectors.getInstance().getGameSessionManager();
+                LandmineBusters.getInstance().getGameSessionManager();
 
         // ゲーム中のプレイヤーでなければ無視する
         if ( !manager.isPlayerInGame(player) ) {
@@ -143,7 +143,7 @@ public class LDListener implements Listener {
 
         Player player = event.getPlayer();
         GameSessionManager manager =
-                LandmineDetectors.getInstance().getGameSessionManager();
+                LandmineBusters.getInstance().getGameSessionManager();
 
         // ゲーム中のプレイヤーでなければ無視する
         if ( !manager.isPlayerInGame(player) ) {
@@ -161,7 +161,7 @@ public class LDListener implements Listener {
     public void onWeatherChange(WeatherChangeEvent event) {
 
         // プラグインのワールドで天候が変更した場合に阻止する。
-        if ( event.getWorld().getName().equals(LandmineDetectors.WORLD_NAME) ) {
+        if ( event.getWorld().getName().equals(LandmineBusters.WORLD_NAME) ) {
             event.setCancelled(true);
         }
     }
@@ -170,7 +170,7 @@ public class LDListener implements Listener {
     public void onWeatherChange(ThunderChangeEvent event) {
 
         // プラグインのワールドで天候が変更した場合に阻止する。
-        if ( event.getWorld().getName().equals(LandmineDetectors.WORLD_NAME) ) {
+        if ( event.getWorld().getName().equals(LandmineBusters.WORLD_NAME) ) {
             event.setCancelled(true);
         }
     }

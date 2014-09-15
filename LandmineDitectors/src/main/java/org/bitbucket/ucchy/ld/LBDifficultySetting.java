@@ -11,22 +11,22 @@ import org.bukkit.configuration.ConfigurationSection;
  *
  * @author ucchy
  */
-public class LDDifficultySetting {
+public class LBDifficultySetting {
 
     private int size;
     private int mine;
 
-    protected LDDifficultySetting(int size, int mine) {
+    protected LBDifficultySetting(int size, int mine) {
         this.size = size;
         this.mine = mine;
     }
 
-    protected static LDDifficultySetting loadFromSection(
+    protected static LBDifficultySetting loadFromSection(
             ConfigurationSection section, int defSize, int defMine) {
 
         int size = section.getInt("size", defSize);
         int mine = section.getInt("mine", defMine);
-        return new LDDifficultySetting(size, mine);
+        return new LBDifficultySetting(size, mine);
     }
 
     /**

@@ -63,7 +63,7 @@ public class FieldData {
 
         int startx = origin.getBlockX();
         int startz = origin.getBlockZ();
-        World world = LandmineDetectors.getInstance().getWorld();
+        World world = LandmineBusters.getInstance().getWorld();
 
         // 領域を全クリア
         for ( int x=startx; x<startx+64; x++ ) {

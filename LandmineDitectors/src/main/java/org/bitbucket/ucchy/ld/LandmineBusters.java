@@ -18,19 +18,19 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * ランドマインディテクターズ
+ * ランドマインバスターズ
  * @author ucchy
  */
-public class LandmineDetectors extends JavaPlugin {
+public class LandmineBusters extends JavaPlugin {
 
     protected static final String WORLD_NAME = "LandmineDetectors";
 
-    private static LandmineDetectors instance;
+    private static LandmineBusters instance;
 
-    private LDConfig config;
+    private LBConfig config;
     private World world;
     private GameSessionManager manager;
-    private LDCommand command;
+    private LBCommand command;
 
     /**
      * プラグインが有効化された時に呼び出されるメソッド
@@ -42,7 +42,7 @@ public class LandmineDetectors extends JavaPlugin {
         instance = this;
 
         // コンフィグのロード
-        config = new LDConfig(this);
+        config = new LBConfig(this);
 
         // ワールドのロード
         world = getServer().getWorld(WORLD_NAME);
@@ -54,10 +54,10 @@ public class LandmineDetectors extends JavaPlugin {
         manager = new GameSessionManager();
 
         // コマンドの準備
-        command = new LDCommand();
+        command = new LBCommand();
 
         // リスナーの登録
-        getServer().getPluginManager().registerEvents(new LDListener(), this);
+        getServer().getPluginManager().registerEvents(new LBListener(), this);
     }
 
     /**
@@ -118,7 +118,7 @@ public class LandmineDetectors extends JavaPlugin {
      * LandmineDetectorsのコンフィグデータを取得する
      * @return
      */
-    protected LDConfig getLDConfig() {
+    protected LBConfig getLDConfig() {
         return config;
     }
 
@@ -150,7 +150,7 @@ public class LandmineDetectors extends JavaPlugin {
      * インスタンスを返す
      * @return
      */
-    protected static LandmineDetectors getInstance() {
+    protected static LandmineBusters getInstance() {
         return instance;
     }
 }
