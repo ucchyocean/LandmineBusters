@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.command.Command;
@@ -23,8 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class LandmineBusters extends JavaPlugin {
 
-    // TODO ワールド名が旧プラグイン名のままなので、いつか直す・・・
-    protected static final String WORLD_NAME = "LandmineDetectors";
+    protected static final String WORLD_NAME = "LandmineBusters";
 
     private static LandmineBusters instance;
 
@@ -113,9 +111,6 @@ public class LandmineBusters extends JavaPlugin {
                     World world, Random r,
                     int x, int z, ChunkGenerator.BiomeGrid biomes) {
                 return new byte[256 / 16][];
-            }
-            public Location getFixedSpawnLocation(World world, Random random) {
-                return new Location(world, 0, 70, 0);
             }
         });
 

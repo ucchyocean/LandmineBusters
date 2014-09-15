@@ -98,7 +98,7 @@ public class LBListener implements Listener {
             // 足元を土ブロックに変更する
             Block down = block.getRelative(BlockFace.DOWN);
             if ( block.getType() == Material.AIR &&
-                    down.getType() == Material.GRASS ) {
+                    (down.getType() == Material.GRASS || down.getType() == Material.MYCEL) ) {
                 setCoarseDirt(down);
                 session.getField().increaseStepOn();
             }

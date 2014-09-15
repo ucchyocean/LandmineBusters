@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 
 /**
  * フィールドデータ
@@ -75,11 +76,19 @@ public class FieldData {
                 }
             }
         }
+        for ( Entity entity : world.getEntities() ) {
+            Location loc = entity.getLocation();
+            if ( startx <= loc.getBlockX() && loc.getBlockX() <= (startx + 64) &&
+                    startz <= loc.getBlockZ() && loc.getBlockZ() <= (startz + 64) ) {
+                entity.remove();
+            }
+        }
 
         // 草ブロックを生成
         for ( int x = startx; x < startx + size; x++ ) {
             for ( int z = startz; z < startz + size; z++ ) {
-                world.getBlockAt(x, origin.getBlockY(), z).setType(Material.GRASS);
+                Material material = (x + z) % 2 == 0 ? Material.GRASS : Material.MYCEL;
+                world.getBlockAt(x, origin.getBlockY(), z).setType(material);
             }
         }
 
