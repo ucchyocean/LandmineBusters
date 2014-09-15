@@ -1,0 +1,4 @@
+LandmineBusters
+===============
+
+LandmineBusters minigame plugin
