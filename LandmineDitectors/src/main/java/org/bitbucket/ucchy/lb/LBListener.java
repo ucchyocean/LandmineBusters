@@ -43,8 +43,8 @@ public class LBListener implements Listener {
         // 現在位置のブロックを取得する
         Block block = event.getTo().getBlock();
 
-        // 現在位置にアクティブな地雷があるかどうかを確認する。あったらゲームオーバー
-        if ( session.getField().isActiveExist(location) ) {
+        // 現在位置に地雷があるかどうかを確認する。あったらゲームオーバー
+        if ( session.getField().isLandmineExist(location) ) {
 
             // 爆発エフェクト＆爆死
             location.getWorld().createExplosion(location, 0);

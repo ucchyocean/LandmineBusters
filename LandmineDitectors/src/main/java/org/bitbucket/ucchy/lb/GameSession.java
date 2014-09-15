@@ -28,6 +28,7 @@ public class GameSession {
     private Player player;
     private int size;
     private int mine;
+    private Difficulty difficulty;
     private GameSessionPhase phase;
 
     private int grid_x;
@@ -41,12 +42,14 @@ public class GameSession {
      * @param player プレイヤー
      * @param size マップサイズ
      * @param minenum 埋める地雷の個数
+     * @param difficulty 難易度
      */
-    public GameSession(Player player, int size, int mine) {
+    public GameSession(Player player, int size, int mine, Difficulty difficulty) {
 
         this.player = player;
         this.size = size;
         this.mine = mine;
+        this.difficulty = difficulty;
 
         // そのままPREPAREフェーズに移行する
         runPrepare();
@@ -105,6 +108,8 @@ public class GameSession {
         startTime = System.currentTimeMillis();
 
         // メッセージを流す
+        player.sendMessage(ChatColor.GOLD +
+                "Welcome to Landmine Busters !!");
         player.sendMessage(
                 "フィールドに埋まっている地雷にレッドストーントーチを立てて、"
                 + "全て無効化してください。");
@@ -243,13 +248,13 @@ public class GameSession {
         player.setExp(tempExp);
     }
 
-    private int sendResult(boolean isClear) {
+    private RankingScoreData sendResult(boolean isClear) {
 
         int point = 0;
 
         // 残りタイムポイントを加算（クリア時のみ）
         int time = (int)((System.currentTimeMillis() - startTime) / 1000);
-        int timePoint = mine * 20 - time;
+        int timePoint = (mine * 20 - time) * 2;
         if ( !isClear || timePoint < 0 ) timePoint = 0;
         point += timePoint;
 
@@ -265,9 +270,9 @@ public class GameSession {
 
         player.sendMessage("==========リザルト==========");
         if ( isClear ) {
-            player.sendMessage(ChatColor.RED + "クリア！！");
+            player.sendMessage(difficulty.getName() + " " + ChatColor.RED + "クリア！！");
         } else {
-            player.sendMessage(ChatColor.BLUE + "失敗。。。");
+            player.sendMessage(difficulty.getName() + " " + ChatColor.DARK_AQUA + "失敗。。。");
         }
         player.sendMessage(String.format(
                 "タイム: %d秒 " + ChatColor.GREEN + "(+%dP)", time, timePoint));
@@ -276,9 +281,26 @@ public class GameSession {
         player.sendMessage(String.format(
                 "除去した地雷: %d個 " + ChatColor.GREEN + "(+%dP)", deactive, deactivePoint));
         player.sendMessage(ChatColor.GOLD + "トータルスコア: " + point + "P");
+
+        // スコアデータを作成する
+        RankingScoreData data = new RankingScoreData();
+        data.setName(player.getName());
+        data.setScore(point);
+        data.setUuid(player.getUniqueId());
+
+        // ランキングを更新する
+        RankingDataManager manager =
+                LandmineBusters.getInstance().getRankingManager();
+        if ( manager.getData(difficulty).updateData(data) ) {
+            player.sendMessage(ChatColor.GOLD + "自己ベストを更新しました！");
+        }
+        int num = manager.getRankingNum(player, difficulty);
+        player.sendMessage(difficulty.getName() + " ランキング: " +
+                ChatColor.LIGHT_PURPLE + num + "位");
+
         player.sendMessage("==========================");
 
-        return point;
+        return data;
     }
 
     /**

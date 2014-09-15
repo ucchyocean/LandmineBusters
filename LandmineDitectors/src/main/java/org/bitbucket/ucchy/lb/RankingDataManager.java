@@ -7,6 +7,9 @@ package org.bitbucket.ucchy.lb;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+
+import org.bukkit.entity.Player;
 
 /**
  * ランキングデータマネージャ
@@ -14,9 +17,7 @@ import java.io.IOException;
  */
 public class RankingDataManager {
 
-    private RankingData easy;
-    private RankingData normal;
-    private RankingData hard;
+    private HashMap<Difficulty, RankingData> datas;
 
     public RankingDataManager(File dataFolder) {
 
@@ -24,9 +25,10 @@ public class RankingDataManager {
             dataFolder.mkdirs();
         }
 
-        easy = loadData(dataFolder, "easy");
-        normal = loadData(dataFolder, "normal");
-        hard = loadData(dataFolder, "hard");
+        datas = new HashMap<Difficulty, RankingData>();
+        for ( Difficulty difficulty : Difficulty.values() ) {
+            datas.put(difficulty, loadData(dataFolder, difficulty.getName()));
+        }
     }
 
     private RankingData loadData(File dataFolder, String rank) {
@@ -44,24 +46,11 @@ public class RankingDataManager {
         return RankingData.loadFromFile(file);
     }
 
-    /**
-     * @return easy
-     */
-    public RankingData getEasy() {
-        return easy;
+    public RankingData getData(Difficulty difficulty) {
+        return datas.get(difficulty);
     }
 
-    /**
-     * @return normal
-     */
-    public RankingData getNormal() {
-        return normal;
-    }
-
-    /**
-     * @return hard
-     */
-    public RankingData getHard() {
-        return hard;
+    public int getRankingNum(Player player, Difficulty difficulty) {
+        return datas.get(difficulty).getRankingNum(player);
     }
 }

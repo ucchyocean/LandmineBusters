@@ -31,6 +31,7 @@ public class LandmineBusters extends JavaPlugin {
     private World world;
     private GameSessionManager manager;
     private LBCommand command;
+    private RankingDataManager ranking;
 
     /**
      * プラグインが有効化された時に呼び出されるメソッド
@@ -41,17 +42,20 @@ public class LandmineBusters extends JavaPlugin {
 
         instance = this;
 
-        // コンフィグのロード
-        config = new LBConfig(this);
-
         // ワールドのロード
         world = getServer().getWorld(WORLD_NAME);
         if ( world == null ) {
             world = createWorld();
         }
 
+        // コンフィグのロード
+        config = new LBConfig(this);
+
         // マネージャの生成
         manager = new GameSessionManager();
+
+        // ランキングデータのロード
+        ranking = new RankingDataManager(getDataFolder());
 
         // コマンドの準備
         command = new LBCommand();
@@ -136,6 +140,14 @@ public class LandmineBusters extends JavaPlugin {
      */
     protected GameSessionManager getGameSessionManager() {
         return manager;
+    }
+
+    /**
+     * ランキングデータマネージャを取得する
+     * @return ランキングデータマネージャ
+     */
+    protected RankingDataManager getRankingManager() {
+        return ranking;
     }
 
     /**

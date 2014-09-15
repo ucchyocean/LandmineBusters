@@ -22,8 +22,12 @@ permissions:
   LandmineBusters.start:
     description: Permission of start command.
     default: true
+  LandmineBusters.rank:
+    description: Permission of rank command.
+    default: true
   'LandmineBusters.*':
     description: All of permissions.
     children:
       LandmineBusters.command: true
       LandmineBusters.start: true
+      LandmineBusters.rank: true

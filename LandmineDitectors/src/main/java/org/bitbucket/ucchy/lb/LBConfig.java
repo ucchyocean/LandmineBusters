@@ -17,7 +17,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class LBConfig {
 
     private LandmineBusters parent;
-    private HashMap<String, LBDifficultySetting> difficulty;
+    private HashMap<Difficulty, LBDifficultySetting> difficulty;
     private int startDelay;
 
     /**
@@ -47,33 +47,21 @@ public class LBConfig {
         parent.reloadConfig();
         FileConfiguration conf = parent.getConfig();
 
-        difficulty = new HashMap<String, LBDifficultySetting>();
-
-        if ( conf.contains("difficulty.easy") ) {
-            difficulty.put("easy", LBDifficultySetting.loadFromSection(
-                    conf.getConfigurationSection("difficulty.easy"), 10, 5));
-        } else {
-            difficulty.put("easy", new LBDifficultySetting(10, 5));
-        }
-
-        if ( conf.contains("difficulty.normal") ) {
-            difficulty.put("normal", LBDifficultySetting.loadFromSection(
-                    conf.getConfigurationSection("difficulty.normal"), 12, 12));
-        } else {
-            difficulty.put("normal", new LBDifficultySetting(12, 12));
-        }
-
-        if ( conf.contains("difficulty.hard") ) {
-            difficulty.put("hard", LBDifficultySetting.loadFromSection(
-                    conf.getConfigurationSection("difficulty.hard"), 15, 30));
-        } else {
-            difficulty.put("hard", new LBDifficultySetting(15, 30));
+        difficulty = new HashMap<Difficulty, LBDifficultySetting>();
+        for ( Difficulty dif : Difficulty.values() ) {
+            String path = "difficulty." + dif.getName();
+            if ( conf.contains(path) ) {
+                difficulty.put(dif, LBDifficultySetting.loadFromSection(
+                        conf.getConfigurationSection(path), dif.size, dif.mine));
+            } else {
+                difficulty.put(dif, new LBDifficultySetting(dif.size, dif.mine));
+            }
         }
 
         startDelay = conf.getInt("startDelay", 5);
 
         // 値のチェック
-        for ( String dif : new String[]{"easy", "normal", "hard"} ) {
+        for ( Difficulty dif : difficulty.keySet() ) {
             LBDifficultySetting setting = difficulty.get(dif);
             if ( setting.getMine() <= 0 ) {
                 setting.setMine(1);
@@ -86,7 +74,7 @@ public class LBConfig {
     /**
      * @return difficulty
      */
-    public HashMap<String, LBDifficultySetting> getDifficulty() {
+    public HashMap<Difficulty, LBDifficultySetting> getDifficulty() {
         return difficulty;
     }
 

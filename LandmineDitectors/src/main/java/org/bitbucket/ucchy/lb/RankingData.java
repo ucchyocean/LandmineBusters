@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 /**
  * ランキングデータ
@@ -56,17 +57,25 @@ public class RankingData {
         datas.put(uuid, data);
 
         // ランキングを更新する
+        updateRanking();
+
+        // 保存
+        save();
+
+        return true;
+    }
+
+    /**
+     * ランキングを更新する
+     */
+    private void updateRanking() {
+
         ranking = new ArrayList<RankingScoreData>(datas.values());
         Collections.sort(ranking, new Comparator<RankingScoreData>() {
             public int compare(RankingScoreData o1, RankingScoreData o2) {
                 return o2.getScore() - o1.getScore();
             }
         });
-
-        // 保存
-        save();
-
-        return true;
     }
 
     /**
@@ -93,6 +102,8 @@ public class RankingData {
 
             ranking.datas.put(uuid, data);
         }
+
+        ranking.updateRanking();
 
         return ranking;
     }
@@ -123,5 +134,26 @@ public class RankingData {
      */
     private static boolean isUUID(String source) {
         return source.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+    }
+
+    /**
+     * @return ranking
+     */
+    public ArrayList<RankingScoreData> getRanking() {
+        return ranking;
+    }
+
+    public int getRankingNum(Player player) {
+
+        if ( !datas.containsKey(player.getUniqueId()) ) {
+            return 99999;
+        }
+
+        for ( int index = 0; index < ranking.size(); index++ ) {
+            if ( ranking.get(index).getUuid().equals(player.getUniqueId()) ) {
+                return index + 1;
+            }
+        }
+        return 99999;
     }
 }

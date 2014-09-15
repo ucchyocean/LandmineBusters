@@ -77,10 +77,12 @@ public class GameSessionManager {
      * @param player プレイヤー
      * @param size マップサイズ
      * @param mine 埋め込む地雷の個数
+     * @param difficulty 難易度
      * @return 作成されたゲームセッション
      */
-    public GameSession makeNewSession(Player player, int size, int mine) {
-        GameSession session = new GameSession(player, size, mine);
+    public GameSession makeNewSession(Player player,
+            int size, int mine, Difficulty difficulty) {
+        GameSession session = new GameSession(player, size, mine, difficulty);
         sessions.put(player.getUniqueId(), session);
         return session;
     }
