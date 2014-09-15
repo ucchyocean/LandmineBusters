@@ -78,11 +78,22 @@ public class LBListener implements Listener {
             player.setExp(0);
             player.setMetadata(META_KEEPEXP,
                     new FixedMetadataValue(LandmineBusters.getInstance(), true));
+            player.sendMessage("地雷を踏んでしまった・・・");
             player.damage(30000);
             respawnLocations.put(player.getUniqueId(), session.runLose());
             return; // ゲームオーバー
 
         } else {
+
+            // フィールドから落下した場合はゲームオーバー
+            if ( location.getY() < 50 ) {
+                player.setMetadata(META_KEEPEXP,
+                        new FixedMetadataValue(LandmineBusters.getInstance(), true));
+                player.sendMessage("落下してしまった・・・");
+                player.damage(30000);
+                respawnLocations.put(player.getUniqueId(), session.runLose());
+                return; // ゲームオーバー
+            }
 
             // 足元を土ブロックに変更する
             Block down = block.getRelative(BlockFace.DOWN);

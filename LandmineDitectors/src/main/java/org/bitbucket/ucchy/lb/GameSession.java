@@ -180,9 +180,6 @@ public class GameSession {
         // セッションマネージャから登録を削除する
         LandmineBusters.getInstance().getGameSessionManager().removeSession(player);
 
-        // メッセージを流す
-        player.sendMessage("地雷を踏んでしまった・・・");
-
         // リザルトを表示する
         sendResult(false);
 
