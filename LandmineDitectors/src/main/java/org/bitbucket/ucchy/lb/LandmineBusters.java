@@ -122,7 +122,7 @@ public class LandmineBusters extends JavaPlugin {
      * LandmineDetectorsのコンフィグデータを取得する
      * @return
      */
-    protected LBConfig getLDConfig() {
+    protected LBConfig getLBConfig() {
         return config;
     }
 

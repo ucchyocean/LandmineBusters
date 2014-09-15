@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * ゲームセッション
@@ -34,6 +35,9 @@ public class GameSession {
     private int grid_x;
     private int grid_z;
     private FieldData field;
+    private Location startLoc;
+
+    private BukkitRunnable delayTimer;
 
     private long startTime;
 
@@ -71,18 +75,50 @@ public class GameSession {
         Location origin = new Location(
                 LandmineBusters.getInstance().getWorld(), grid_x * 64, 65, grid_z * 64);
         this.field = new FieldData(size, mine, origin);
-        Location startLoc = field.applyField();
+        startLoc = field.applyField();
 
-        // 元いた場所を記憶する
-        tempLoc = player.getLocation();
+        // 不正防止用のテレポート遅延をする
+        int delay = LandmineBusters.getInstance().getLBConfig().getStartDelay();
+        if ( delay == 0 ) {
+            // そのままIN_GAMEフェイズに移行する
+            runInGame();
 
-        // TODO 不正防止用のテレポート遅延をする
+        } else {
+
+            player.sendMessage("ゲームの開始準備をしています...");
+            player.sendMessage(ChatColor.RED + "" + delay +
+                    ChatColor.WHITE + "秒間動かずにお待ちください...");
+
+            // 指定の秒数後にゲームを開始する
+            delayTimer = new BukkitRunnable() {
+                public void run() {
+                    runInGame();
+                }
+            };
+            delayTimer.runTaskLater(LandmineBusters.getInstance(), delay * 20);
+        }
+    }
+
+    /**
+     * ゲームのIN_GAMEフェーズを実行する
+     */
+    public void runInGame() {
+
+        // 既にゲームがキャンセルされているなら、何もしない
+        if ( phase == GameSessionPhase.CANCEL ) {
+            return;
+        }
+
+        phase = GameSessionPhase.IN_GAME;
 
         // 何かに乗っている、何かを乗せているなら強制パージする
         player.leaveVehicle();
         if ( player.getPassenger() != null ) {
             player.getPassenger().leaveVehicle();
         }
+
+        // 元いた場所を記憶する
+        tempLoc = player.getLocation();
 
         // スタート地点に送る
         player.teleport(startLoc, TeleportCause.PLUGIN);
@@ -92,17 +128,6 @@ public class GameSession {
 
         // アイテムを持たせる
         player.getInventory().addItem(new ItemStack(Material.REDSTONE_TORCH_ON, mine));
-
-        // そのままIN_GAMEフェイズに移行する
-        runInGame();
-    }
-
-    /**
-     * ゲームのIN_GAMEフェーズを実行する
-     */
-    public void runInGame() {
-
-        phase = GameSessionPhase.IN_GAME;
 
         // 開始時刻を記録する
         startTime = System.currentTimeMillis();
@@ -143,16 +168,14 @@ public class GameSession {
 
     /**
      * ゲームのLOSEフェーズを実行する
+     * @return リスポーン地点
      */
-    public void runLose() {
+    public Location runLose() {
 
         phase = GameSessionPhase.LOSE;
 
-        // インベントリを復帰する TODO リスポーン後にする必要があるかも
+        // インベントリを復帰する
         restoreInventory();
-
-        // もといた場所に戻す TODO リスポーン後にする必要があるかも
-        player.teleport(tempLoc, TeleportCause.PLUGIN);
 
         // セッションマネージャから登録を削除する
         LandmineBusters.getInstance().getGameSessionManager().removeSession(player);
@@ -162,6 +185,9 @@ public class GameSession {
 
         // リザルトを表示する
         sendResult(false);
+
+        // リスポーン地点を返す
+        return tempLoc;
     }
 
     /**
@@ -169,13 +195,23 @@ public class GameSession {
      */
     public void runCancel() {
 
-        phase = GameSessionPhase.LOSE;
+        phase = GameSessionPhase.CANCEL;
 
-        // インベントリを復帰する
-        restoreInventory();
+        if ( delayTimer != null ) {
+            // 遅延開始タイマーをキャンセルする
+            delayTimer.cancel();
+            delayTimer = null;
+        }
 
-        // もといた場所に戻す
-        player.teleport(tempLoc, TeleportCause.PLUGIN);
+        if ( tempInventory != null ) {
+            // インベントリを復帰する
+            restoreInventory();
+        }
+
+        if ( tempLoc != null ) {
+            // もといた場所に戻す
+            player.teleport(tempLoc, TeleportCause.PLUGIN);
+        }
 
         // セッションマネージャから登録を削除する
         LandmineBusters.getInstance().getGameSessionManager().removeSession(player);
@@ -248,6 +284,11 @@ public class GameSession {
         player.setExp(tempExp);
     }
 
+    /**
+     * リザルトの表示と、スコアの計算、ランキングへの反映
+     * @param isClear クリアか失敗か
+     * @return スコアデータ
+     */
     private RankingScoreData sendResult(boolean isClear) {
 
         int point = 0;
@@ -280,7 +321,7 @@ public class GameSession {
 //                "踏破率: %.1f％ " + ChatColor.GREEN + "(+%dP)", stepOnPercent*100, stepOnPoint));
         player.sendMessage(String.format(
                 "除去した地雷: %d個 " + ChatColor.GREEN + "(+%dP)", deactive, deactivePoint));
-        player.sendMessage(ChatColor.GOLD + "トータルスコア: " + point + "P");
+        player.sendMessage(ChatColor.GOLD + "今回のスコア: " + ChatColor.GREEN + point + "P");
 
         // スコアデータを作成する
         RankingScoreData data = new RankingScoreData();
@@ -295,12 +336,22 @@ public class GameSession {
             player.sendMessage(ChatColor.GOLD + "自己ベストを更新しました！");
         }
         int num = manager.getRankingNum(player, difficulty);
-        player.sendMessage(difficulty.getName() + " ランキング: " +
-                ChatColor.LIGHT_PURPLE + num + "位");
+        int best = manager.getScore(player, difficulty);
+        player.sendMessage("あなたの現在のランキング: " +
+                ChatColor.LIGHT_PURPLE + num + "位" +
+                ChatColor.GREEN + "(" + best + "P)");
 
         player.sendMessage("==========================");
 
         return data;
+    }
+
+    /**
+     * 遅延開始タイマー中かどうかを返す
+     * @return
+     */
+    public boolean isDelayTimer() {
+        return delayTimer != null;
     }
 
     /**

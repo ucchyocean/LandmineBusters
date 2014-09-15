@@ -143,6 +143,11 @@ public class RankingData {
         return ranking;
     }
 
+    /**
+     * 指定されたプレイヤーの順位を取得する
+     * @param player プレイヤー
+     * @return 順位
+     */
     public int getRankingNum(Player player) {
 
         if ( !datas.containsKey(player.getUniqueId()) ) {
@@ -155,5 +160,18 @@ public class RankingData {
             }
         }
         return 99999;
+    }
+
+    /**
+     * 指定されたプレイヤーのスコアを取得する
+     * @param player プレイヤー
+     * @return スコア
+     */
+    public int getScore(Player player) {
+
+        if ( !datas.containsKey(player.getUniqueId()) ) {
+            return 0;
+        }
+        return datas.get(player.getUniqueId()).getScore();
     }
 }

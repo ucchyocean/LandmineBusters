@@ -5,6 +5,9 @@
  */
 package org.bitbucket.ucchy.lb;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,16 +17,29 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * LandmineBustersのリスナークラス
  * @author ucchy
  */
 public class LBListener implements Listener {
+
+    private static final String META_KEEPEXP = "KeepExp";
+
+    private HashMap<UUID, Location> respawnLocations;
+
+    public LBListener() {
+        respawnLocations = new HashMap<UUID, Location>();
+    }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -32,6 +48,15 @@ public class LBListener implements Listener {
         Location location = player.getLocation();
         GameSessionManager manager =
                 LandmineBusters.getInstance().getGameSessionManager();
+
+        // 遅延開始タイマー中なら、セッションをキャンセルする
+        if ( manager.isPlayerPrepare(player) ) {
+            GameSession session = manager.getSession(player);
+            if ( session.isDelayTimer() ) {
+                session.runCancel();
+            }
+            return;
+        }
 
         // ゲーム中のプレイヤーでなければ無視する
         if ( !manager.isPlayerInGame(player) ) {
@@ -51,8 +76,10 @@ public class LBListener implements Listener {
             player.getInventory().clear();
             player.setLevel(0);
             player.setExp(0);
+            player.setMetadata(META_KEEPEXP,
+                    new FixedMetadataValue(LandmineBusters.getInstance(), true));
             player.damage(30000);
-            session.runLose();
+            respawnLocations.put(player.getUniqueId(), session.runLose());
             return; // ゲームオーバー
 
         } else {
@@ -155,6 +182,68 @@ public class LBListener implements Listener {
         // ゲーム中プレイヤーがサーバーを退出してしまう場合は、
         // セッションをキャンセルする。
         session.runCancel();
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+
+        Player player = event.getPlayer();
+        GameSessionManager manager =
+                LandmineBusters.getInstance().getGameSessionManager();
+
+        // 遅延開始タイマー中なら、セッションをキャンセルする
+        if ( manager.isPlayerPrepare(player) ) {
+            GameSession session = manager.getSession(player);
+            if ( session.isDelayTimer() ) {
+                session.runCancel();
+            }
+            return;
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+
+        if ( !(event.getEntity() instanceof Player) ) {
+            return;
+        }
+
+        Player player = (Player)event.getEntity();
+        GameSessionManager manager =
+                LandmineBusters.getInstance().getGameSessionManager();
+
+        // 遅延開始タイマー中なら、セッションをキャンセルする
+        if ( manager.isPlayerPrepare(player) ) {
+            GameSession session = manager.getSession(player);
+            if ( session.isDelayTimer() ) {
+                session.runCancel();
+            }
+            return;
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+
+        Player player = event.getEntity();
+        if ( !player.hasMetadata(META_KEEPEXP) ) {
+            return;
+        }
+
+        player.removeMetadata(META_KEEPEXP, LandmineBusters.getInstance());
+        event.setKeepLevel(true);
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+
+        Player player = event.getPlayer();
+        if ( !respawnLocations.containsKey(player.getUniqueId()) ) {
+            return;
+        }
+
+        event.setRespawnLocation(respawnLocations.get(player.getUniqueId()));
+        respawnLocations.remove(player.getUniqueId());
     }
 
     @EventHandler

@@ -116,7 +116,7 @@ public class LBCommand implements TabExecutor {
         if ( args.length >= 2 ) {
             difficulty = Difficulty.getFromString(args[1], Difficulty.NORMAL);
         }
-        LBConfig config = LandmineBusters.getInstance().getLDConfig();
+        LBConfig config = LandmineBusters.getInstance().getLBConfig();
         LBDifficultySetting setting = config.getDifficulty().get(difficulty);
         manager.makeNewSession(player, setting.getSize(), setting.getMine(), difficulty);
 

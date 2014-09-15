@@ -53,4 +53,8 @@ public class RankingDataManager {
     public int getRankingNum(Player player, Difficulty difficulty) {
         return datas.get(difficulty).getRankingNum(player);
     }
+
+    public int getScore(Player player, Difficulty difficulty) {
+        return datas.get(difficulty).getScore(player);
+    }
 }
