@@ -151,6 +151,13 @@ public class GameSession {
         player.sendMessage(
                 "経験値バーは一番近い地雷との距離を、"
                 + "レベルは周囲のマスにある地雷の個数を示します。");
+
+        // アナウンスを流す
+        if ( parent.getLBConfig().isAnnounce() ) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
+                    ChatColor.GRAY + player.getName() + "さんが地雷探知ゲーム" +
+                    difficulty.getName() + "を開始しました");
+        }
     }
 
     /**
@@ -173,7 +180,17 @@ public class GameSession {
         player.sendMessage("ゲームに勝利しました！");
 
         // リザルトを表示する
-        sendResult(true);
+        RankingScoreData score = sendResult(true);
+
+        // アナウンスを流す
+        if ( parent.getLBConfig().isAnnounce() ) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
+                    ChatColor.GRAY + player.getName() + "さんが地雷探知ゲームを" +
+                    ChatColor.GOLD + "クリア" + ChatColor.GRAY + "しました！");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
+                    ChatColor.GRAY + "難易度：" + difficulty.getName() +
+                    ", スコア：" + score.getScore() + "P");
+        }
     }
 
     /**
@@ -191,9 +208,19 @@ public class GameSession {
         parent.getGameSessionManager().removeSession(player);
 
         // リザルトを表示する
-        sendResult(false);
+        RankingScoreData score = sendResult(false);
 
-        // リスポーン地点を返す
+        // アナウンスを流す
+        if ( parent.getLBConfig().isAnnounce() ) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
+                    ChatColor.GRAY + player.getName() + "さんが地雷探知ゲームで" +
+                    "失敗しました。。。");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
+                    ChatColor.GRAY + "難易度：" + difficulty.getName() +
+                    ", スコア：" + score.getScore() + "P");
+        }
+
+        // リスポーン地点を返す（プレイヤー死亡中はテレポートできないため）
         return tempLoc;
     }
 

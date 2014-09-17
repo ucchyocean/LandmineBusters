@@ -19,6 +19,7 @@ public class LBConfig {
     private LandmineBusters parent;
     private HashMap<Difficulty, LBDifficultySetting> difficulty;
     private int startDelay;
+    private boolean announce;
 
     /**
      * コンストラクタ
@@ -60,6 +61,8 @@ public class LBConfig {
 
         startDelay = conf.getInt("startDelay", 5);
 
+        announce = conf.getBoolean("announce", true);
+
         // 値のチェック
         for ( Difficulty dif : difficulty.keySet() ) {
             LBDifficultySetting setting = difficulty.get(dif);
@@ -83,5 +86,12 @@ public class LBConfig {
      */
     public int getStartDelay() {
         return startDelay;
+    }
+
+    /**
+     * @return announce
+     */
+    public boolean isAnnounce() {
+        return announce;
     }
 }
