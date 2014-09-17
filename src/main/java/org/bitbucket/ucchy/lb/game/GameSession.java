@@ -27,6 +27,7 @@ public class GameSession {
 
     private LandmineBusters parent;
     private Inventory tempInventory;
+    private Inventory tempArmors;
     private int tempLevel;
     private float tempExp;
     private Location tempLoc;
@@ -230,18 +231,24 @@ public class GameSession {
      */
     private void moveToTempInventory() {
 
-        tempInventory = Bukkit.createInventory(player, 6 * 9);
+        // インベントリの保存
+        tempInventory = Bukkit.createInventory(player, 5 * 9);
         for ( ItemStack item : player.getInventory().getContents() ) {
             if ( item != null ) {
                 tempInventory.addItem(item);
             }
         }
+
+        // 防具の保存
+        tempArmors = Bukkit.createInventory(player, 9);
         for ( int index=0; index<4; index++ ) {
             ItemStack armor = player.getInventory().getArmorContents()[index];
             if ( armor != null ) {
-                tempInventory.setItem(45 + index, armor);
+                tempArmors.setItem(index, armor);
             }
         }
+
+        // インベントリの消去とアップデート
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
                 new ItemStack(Material.AIR),
@@ -251,6 +258,7 @@ public class GameSession {
         });
         updateInventory(player);
 
+        // レベルと経験値の保存と消去
         tempLevel = player.getLevel();
         tempExp = player.getExp();
         player.setLevel(0);
@@ -262,6 +270,7 @@ public class GameSession {
      */
     private void restoreInventory() {
 
+        // インベントリの消去
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
                 new ItemStack(Material.AIR),
@@ -270,6 +279,7 @@ public class GameSession {
                 new ItemStack(Material.AIR),
         });
 
+        // インベントリと防具の復帰、更新
         for ( ItemStack item : tempInventory.getContents() ) {
             if ( item != null ) {
                 player.getInventory().addItem(item);
@@ -277,7 +287,7 @@ public class GameSession {
         }
         ItemStack[] armorCont = new ItemStack[4];
         for ( int index=0; index<4; index++ ) {
-            ItemStack armor = tempInventory.getItem(45 + index);
+            ItemStack armor = tempArmors.getItem(index);
             if ( armor != null ) {
                 armorCont[index] = armor;
             } else {
@@ -287,6 +297,13 @@ public class GameSession {
         }
         updateInventory(player);
 
+        // テンポラリ領域の消去（念のため）
+        tempInventory.clear();
+        tempInventory = null;
+        tempArmors.clear();
+        tempArmors = null;
+
+        // レベルと経験値の復帰
         player.setLevel(tempLevel);
         player.setExp(tempExp);
     }
