@@ -83,7 +83,8 @@ public class GameSession {
         // グリッドにゲーム用フィールドを生成する
         Location origin = new Location(
                 parent.getWorld(), grid_x * 64, 65, grid_z * 64);
-        this.field = new FieldData(size, mine, origin);
+        RankingScoreData top = parent.getRankingManager().getTopData(difficulty);
+        this.field = new FieldData(size, mine, origin, difficulty, top);
         startLoc = field.applyField();
 
         // 不正防止用のテレポート遅延をする

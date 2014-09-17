@@ -7,9 +7,13 @@ package org.bitbucket.ucchy.lb.game;
 
 import java.util.ArrayList;
 
+import org.bitbucket.ucchy.lb.Difficulty;
+import org.bitbucket.ucchy.lb.ranking.RankingScoreData;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 
 /**
@@ -22,6 +26,8 @@ public class FieldData {
     private ArrayList<Location> mines;
     private ArrayList<Location> actives;
     private Location origin;
+    private Difficulty difficulty;
+    private RankingScoreData top;
 
     private int stepOnCount;
 
@@ -30,11 +36,16 @@ public class FieldData {
      * @param size 1辺のサイズ
      * @param minenum 埋まっている地雷の数
      * @param origin フィールドの基点
+     * @param difficulty ゲームの難易度
+     * @param top 該当難易度のトッププレイヤーのデータ
      */
-    public FieldData(int size, int minenum, Location origin) {
+    public FieldData(int size, int minenum, Location origin,
+            Difficulty difficulty, RankingScoreData top) {
 
         this.size = size;
         this.origin = origin;
+        this.difficulty = difficulty;
+        this.top = top;
         this.stepOnCount = 0;
 
         mines = new ArrayList<Location>();
@@ -93,11 +104,27 @@ public class FieldData {
         }
 
         // スタート地点を生成
+        world.getBlockAt((startx+size), origin.getBlockY(), (startz+size-2)).setType(Material.STONE);
         world.getBlockAt((startx+size), origin.getBlockY(), (startz+size-1)).setType(Material.STONE);
+        world.getBlockAt((startx+size), origin.getBlockY(), (startz+size)).setType(Material.STONE);
+        world.getBlockAt((startx+size-1), origin.getBlockY(), (startz+size)).setType(Material.STONE);
+        world.getBlockAt((startx+size-2), origin.getBlockY(), (startz+size)).setType(Material.STONE);
+
+        // 情報看板
+        Block signBlock = world.getBlockAt((startx+size), origin.getBlockY()+1, (startz+size-2));
+        signBlock.setType(Material.SIGN_POST);
+        Sign sign = (Sign)signBlock.getState();
+        sign.setLine(0, "難易度: " + difficulty.getName());
+        if ( top != null ) {
+            sign.setLine(1, "現在のトップ:");
+            sign.setLine(2, top.getName());
+            sign.setLine(3, top.getScore() + "P");
+        }
+        sign.update();
 
         // スタート地点を返す
         Location startLoc = new Location(
-                world, startx+size+0.5, origin.getBlockY() + 1, startz+size-0.5 );
+                world, startx+size+0.5, origin.getBlockY() + 1, startz+size+0.5 );
         startLoc.setDirection(origin.subtract(startLoc).toVector().setY(0).normalize());
         return startLoc;
     }
