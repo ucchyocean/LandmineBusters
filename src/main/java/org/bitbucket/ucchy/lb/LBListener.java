@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 /**
@@ -172,10 +173,16 @@ public class LBListener implements Listener {
         }
 
         // 下部のブロックを取得する
-        Block block = event.getBlock().getRelative(BlockFace.DOWN);
+        Block down = event.getBlock().getRelative(BlockFace.DOWN);
 
         // 地雷が埋まっていたら有効化する
-        session.getField().tryActiveMine(block.getLocation());
+        session.getField().tryActiveMine(down.getLocation());
+
+        // 一旦イベントをキャンセルし、ブロックを削除、インベントリに直接追加する
+        event.setCancelled(true);
+        event.getBlock().setType(Material.AIR);
+        player.getInventory().addItem(new ItemStack(Material.REDSTONE_TORCH_ON));
+        updateInventory(player);
     }
 
     @EventHandler
@@ -282,5 +289,10 @@ public class LBListener implements Listener {
 
         block.setType(Material.DIRT);
         block.setData((byte) 1);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void updateInventory(Player player) {
+        player.updateInventory();
     }
 }
