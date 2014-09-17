@@ -3,12 +3,13 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2014
  */
-package org.bitbucket.ucchy.lb;
+package org.bitbucket.ucchy.lb.ranking;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.bitbucket.ucchy.lb.Difficulty;
 import org.bukkit.entity.Player;
 
 /**

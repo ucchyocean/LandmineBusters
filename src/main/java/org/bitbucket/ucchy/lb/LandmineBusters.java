@@ -9,6 +9,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Random;
 
+import org.bitbucket.ucchy.lb.game.GameSession;
+import org.bitbucket.ucchy.lb.game.GameSessionManager;
+import org.bitbucket.ucchy.lb.game.GameSessionPhase;
+import org.bitbucket.ucchy.lb.ranking.RankingDataManager;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.command.Command;
@@ -51,7 +55,7 @@ public class LandmineBusters extends JavaPlugin {
         config = new LBConfig(this);
 
         // マネージャの生成
-        manager = new GameSessionManager();
+        manager = new GameSessionManager(this);
 
         // ランキングデータのロード
         ranking = new RankingDataManager(getDataFolder());
@@ -134,7 +138,7 @@ public class LandmineBusters extends JavaPlugin {
      * LandmineDetectorsのコンフィグデータを取得する
      * @return
      */
-    protected LBConfig getLBConfig() {
+    public LBConfig getLBConfig() {
         return config;
     }
 
@@ -142,7 +146,7 @@ public class LandmineBusters extends JavaPlugin {
      * プラグイン用のワールドを取得する
      * @return プラグイン用のワールド
      */
-    protected World getWorld() {
+    public World getWorld() {
         return world;
     }
 
@@ -150,7 +154,7 @@ public class LandmineBusters extends JavaPlugin {
      * ゲームセッションマネージャを取得する
      * @return ゲームセッションマネージャ
      */
-    protected GameSessionManager getGameSessionManager() {
+    public GameSessionManager getGameSessionManager() {
         return manager;
     }
 
@@ -158,7 +162,7 @@ public class LandmineBusters extends JavaPlugin {
      * ランキングデータマネージャを取得する
      * @return ランキングデータマネージャ
      */
-    protected RankingDataManager getRankingManager() {
+    public RankingDataManager getRankingManager() {
         return ranking;
     }
 

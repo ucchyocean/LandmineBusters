@@ -3,8 +3,12 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2014
  */
-package org.bitbucket.ucchy.lb;
+package org.bitbucket.ucchy.lb.game;
 
+import org.bitbucket.ucchy.lb.Difficulty;
+import org.bitbucket.ucchy.lb.LandmineBusters;
+import org.bitbucket.ucchy.lb.ranking.RankingDataManager;
+import org.bitbucket.ucchy.lb.ranking.RankingScoreData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,6 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class GameSession {
 
+    private LandmineBusters parent;
     private Inventory tempInventory;
     private int tempLevel;
     private float tempExp;
@@ -43,13 +48,16 @@ public class GameSession {
 
     /**
      * コンストラクタ
+     * @param parent プラグインのインスタンス
      * @param player プレイヤー
      * @param size マップサイズ
      * @param minenum 埋める地雷の個数
      * @param difficulty 難易度
      */
-    public GameSession(Player player, int size, int mine, Difficulty difficulty) {
+    public GameSession(LandmineBusters parent, Player player,
+            int size, int mine, Difficulty difficulty) {
 
+        this.parent = parent;
         this.player = player;
         this.size = size;
         this.mine = mine;
@@ -67,18 +75,18 @@ public class GameSession {
         phase = GameSessionPhase.PREPARE;
 
         // グリッドをマネージャから取得する
-        int[] grid = LandmineBusters.getInstance().getGameSessionManager().getOpenGrid();
+        int[] grid = parent.getGameSessionManager().getOpenGrid();
         this.grid_x = grid[0];
         this.grid_z = grid[1];
 
         // グリッドにゲーム用フィールドを生成する
         Location origin = new Location(
-                LandmineBusters.getInstance().getWorld(), grid_x * 64, 65, grid_z * 64);
+                parent.getWorld(), grid_x * 64, 65, grid_z * 64);
         this.field = new FieldData(size, mine, origin);
         startLoc = field.applyField();
 
         // 不正防止用のテレポート遅延をする
-        int delay = LandmineBusters.getInstance().getLBConfig().getStartDelay();
+        int delay = parent.getLBConfig().getStartDelay();
         if ( delay == 0 ) {
             // そのままIN_GAMEフェイズに移行する
             runInGame();
@@ -95,7 +103,7 @@ public class GameSession {
                     runInGame();
                 }
             };
-            delayTimer.runTaskLater(LandmineBusters.getInstance(), delay * 20);
+            delayTimer.runTaskLater(parent, delay * 20);
         }
     }
 
@@ -157,7 +165,7 @@ public class GameSession {
         player.teleport(tempLoc, TeleportCause.PLUGIN);
 
         // セッションマネージャから登録を削除する
-        LandmineBusters.getInstance().getGameSessionManager().removeSession(player);
+        parent.getGameSessionManager().removeSession(player);
 
         // メッセージを流す
         player.sendMessage("ゲームに勝利しました！");
@@ -178,7 +186,7 @@ public class GameSession {
         restoreInventory();
 
         // セッションマネージャから登録を削除する
-        LandmineBusters.getInstance().getGameSessionManager().removeSession(player);
+        parent.getGameSessionManager().removeSession(player);
 
         // リザルトを表示する
         sendResult(false);
@@ -211,7 +219,7 @@ public class GameSession {
         }
 
         // セッションマネージャから登録を削除する
-        LandmineBusters.getInstance().getGameSessionManager().removeSession(player);
+        parent.getGameSessionManager().removeSession(player);
 
         // メッセージを流す
         player.sendMessage("ゲームがキャンセルされました。");
@@ -241,6 +249,7 @@ public class GameSession {
                 new ItemStack(Material.AIR),
                 new ItemStack(Material.AIR),
         });
+        updateInventory(player);
 
         tempLevel = player.getLevel();
         tempExp = player.getExp();
@@ -276,6 +285,7 @@ public class GameSession {
             }
             player.getInventory().setArmorContents(armorCont);
         }
+        updateInventory(player);
 
         player.setLevel(tempLevel);
         player.setExp(tempExp);
@@ -327,8 +337,7 @@ public class GameSession {
         data.setUuid(player.getUniqueId());
 
         // ランキングを更新する
-        RankingDataManager manager =
-                LandmineBusters.getInstance().getRankingManager();
+        RankingDataManager manager = parent.getRankingManager();
         if ( manager.getData(difficulty).updateData(data) ) {
             player.sendMessage(ChatColor.GOLD + "自己ベストを更新しました！");
         }
@@ -394,5 +403,14 @@ public class GameSession {
         return (phase == GameSessionPhase.WIN ||
                 phase == GameSessionPhase.LOSE ||
                 phase == GameSessionPhase.CANCEL);
+    }
+
+    /**
+     * インベントリのアップデートを行う
+     * @param player 更新対象のプレイヤー
+     */
+    @SuppressWarnings("deprecation")
+    private void updateInventory(Player player) {
+        player.updateInventory();
     }
 }

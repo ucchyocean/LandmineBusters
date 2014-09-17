@@ -3,7 +3,7 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2014
  */
-package org.bitbucket.ucchy.lb;
+package org.bitbucket.ucchy.lb.game;
 
 import java.util.ArrayList;
 
@@ -64,7 +64,7 @@ public class FieldData {
 
         int startx = origin.getBlockX();
         int startz = origin.getBlockZ();
-        World world = LandmineBusters.getInstance().getWorld();
+        World world = origin.getWorld();
 
         // 領域を全クリア
         for ( int x=startx; x<startx+64; x++ ) {

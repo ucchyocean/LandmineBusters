@@ -8,6 +8,8 @@ package org.bitbucket.ucchy.lb;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bitbucket.ucchy.lb.game.GameSession;
+import org.bitbucket.ucchy.lb.game.GameSessionManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

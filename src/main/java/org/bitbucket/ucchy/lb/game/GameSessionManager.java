@@ -3,12 +3,14 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2014
  */
-package org.bitbucket.ucchy.lb;
+package org.bitbucket.ucchy.lb.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bitbucket.ucchy.lb.Difficulty;
+import org.bitbucket.ucchy.lb.LandmineBusters;
 import org.bukkit.entity.Player;
 
 /**
@@ -17,12 +19,15 @@ import org.bukkit.entity.Player;
  */
 public class GameSessionManager {
 
+    private LandmineBusters parent;
     private HashMap<UUID, GameSession> sessions;
 
     /**
      * コンストラクタ
+     * @param parent プラグインのインスタンス
      */
-    public GameSessionManager() {
+    public GameSessionManager(LandmineBusters parent) {
+        this.parent = parent;
         sessions = new HashMap<UUID, GameSession>();
     }
 
@@ -83,7 +88,7 @@ public class GameSessionManager {
      */
     public GameSession makeNewSession(Player player,
             int size, int mine, Difficulty difficulty) {
-        GameSession session = new GameSession(player, size, mine, difficulty);
+        GameSession session = new GameSession(parent, player, size, mine, difficulty);
         sessions.put(player.getUniqueId(), session);
         return session;
     }
