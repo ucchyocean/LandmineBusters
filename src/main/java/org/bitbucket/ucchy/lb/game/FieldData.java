@@ -120,6 +120,7 @@ public class FieldData {
             sign.setLine(2, top.getName());
             sign.setLine(3, top.getScore() + "P");
         }
+        setBlockData(signBlock, (byte)0);
         sign.update();
 
         // スタート地点を返す
@@ -261,6 +262,11 @@ public class FieldData {
             }
         }
         return false;
+    }
+
+    @SuppressWarnings("deprecation")
+    private void setBlockData(Block block, byte data) {
+        block.setData(data);
     }
 
 //    private void debugPrint() {

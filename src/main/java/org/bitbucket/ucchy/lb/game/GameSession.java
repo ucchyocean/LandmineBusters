@@ -75,6 +75,8 @@ public class GameSession {
 
         phase = GameSessionPhase.PREPARE;
 
+        player.sendMessage("ゲームの開始準備をしています...");
+
         // グリッドをマネージャから取得する
         int[] grid = parent.getGameSessionManager().getOpenGrid();
         this.grid_x = grid[0];
@@ -95,7 +97,6 @@ public class GameSession {
 
         } else {
 
-            player.sendMessage("ゲームの開始準備をしています...");
             player.sendMessage(ChatColor.RED + "" + delay +
                     ChatColor.WHITE + "秒間動かずにお待ちください...");
 

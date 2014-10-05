@@ -276,7 +276,7 @@ public class LBListener implements Listener {
     }
 
     @EventHandler
-    public void onWeatherChange(ThunderChangeEvent event) {
+    public void onThunderChange(ThunderChangeEvent event) {
 
         // プラグインのワールドで天候が変更した場合に阻止する。
         if ( event.getWorld().getName().equals(LandmineBusters.WORLD_NAME) ) {
