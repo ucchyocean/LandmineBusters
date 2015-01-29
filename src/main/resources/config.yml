@@ -3,6 +3,9 @@
 # @license    LGPLv3
 # @copyright  Copyright ucchy 2015
 
+# Message language.
+lang: en
+
 # Difficulty Settings.
 # size -> field size.
 # mine -> landmine num.
