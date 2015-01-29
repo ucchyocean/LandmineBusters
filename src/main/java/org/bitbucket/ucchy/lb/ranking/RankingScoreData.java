@@ -5,8 +5,6 @@
  */
 package org.bitbucket.ucchy.lb.ranking;
 
-import java.util.UUID;
-
 import org.bukkit.configuration.ConfigurationSection;
 
 /**
@@ -19,7 +17,7 @@ public class RankingScoreData {
     private int score;
 
     /** プレイヤーID */
-    private UUID uuid;
+    private String uuid;
 
     /** プレイヤー名 */
     private String name;
@@ -41,14 +39,14 @@ public class RankingScoreData {
     /**
      * @return uuid
      */
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
     /**
      * @param uuid uuid
      */
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 

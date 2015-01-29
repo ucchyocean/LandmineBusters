@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.UUID;
 
+import org.bitbucket.ucchy.lb.Utility;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ import org.bukkit.entity.Player;
  */
 public class RankingData {
 
-    private HashMap<UUID, RankingScoreData> datas;
+    private HashMap<String, RankingScoreData> datas;
     private ArrayList<RankingScoreData> ranking;
     private File file;
 
@@ -32,7 +33,7 @@ public class RankingData {
      */
     private RankingData(File file) {
         this.file = file;
-        datas = new HashMap<UUID, RankingScoreData>();
+        datas = new HashMap<String, RankingScoreData>();
         ranking = new ArrayList<RankingScoreData>();
     }
 
@@ -44,7 +45,7 @@ public class RankingData {
      */
     public boolean updateData(RankingScoreData data) {
 
-        UUID uuid = data.getUuid();
+        String uuid = data.getUuid();
         if ( datas.containsKey(uuid) ) {
 
             if ( data.getScore() <= datas.get(uuid).getScore() ) {
@@ -90,17 +91,20 @@ public class RankingData {
 
         for ( String key : config.getKeys(false) ) {
 
-            if ( !isUUID(key) ) {
-                continue;
+            String uuid = key;
+            if ( !isUUID(key) && Utility.isCB178orLater() ) {
+                OfflinePlayer player = Utility.getOfflinePlayer(key);
+                if ( player != null && player.hasPlayedBefore() ) {
+                    // UUIDへアップデートする
+                    uuid = player.getUniqueId().toString();
+                }
             }
-
-            UUID uuid = UUID.fromString(key);
 
             RankingScoreData data =
                     RankingScoreData.loadFromSection(config.getConfigurationSection(key));
             data.setUuid(uuid);
 
-            ranking.datas.put(uuid, data);
+            ranking.datas.put(key, data);
         }
 
         ranking.updateRanking();
@@ -115,8 +119,8 @@ public class RankingData {
 
         YamlConfiguration config = new YamlConfiguration();
 
-        for ( UUID uuid : datas.keySet() ) {
-            ConfigurationSection section = config.createSection(uuid.toString());
+        for ( String uuid : datas.keySet() ) {
+            ConfigurationSection section = config.createSection(uuid);
             datas.get(uuid).saveToSection(section);
         }
 

@@ -17,6 +17,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class LBConfig {
 
     private LandmineBusters parent;
+    private String lang;
     private HashMap<Difficulty, LBDifficultySetting> difficulty;
     private int startDelay;
     private boolean announce;
@@ -48,6 +49,9 @@ public class LBConfig {
         parent.reloadConfig();
         FileConfiguration conf = parent.getConfig();
 
+        String releaseLang = LandmineBusters.getInstance().getReleaseLang();
+        lang = conf.getString("lang", releaseLang);
+
         difficulty = new HashMap<Difficulty, LBDifficultySetting>();
         for ( Difficulty dif : Difficulty.values() ) {
             String path = "difficulty." + dif.getName();
@@ -72,6 +76,13 @@ public class LBConfig {
                 setting.setMine((setting.getSize() * setting.getSize()) - 1);
             }
         }
+    }
+
+    /**
+     * @return lang
+     */
+    public String getLang() {
+        return lang;
     }
 
     /**

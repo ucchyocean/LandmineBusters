@@ -13,6 +13,7 @@ import org.bitbucket.ucchy.lb.game.GameSession;
 import org.bitbucket.ucchy.lb.game.GameSessionManager;
 import org.bitbucket.ucchy.lb.game.GameSessionPhase;
 import org.bitbucket.ucchy.lb.ranking.RankingDataManager;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.command.Command;
@@ -28,8 +29,6 @@ public class LandmineBusters extends JavaPlugin {
 
     protected static final String WORLD_NAME = "LandmineBusters";
 
-    private static LandmineBusters instance;
-
     private LBConfig config;
     private World world;
     private GameSessionManager manager;
@@ -43,8 +42,6 @@ public class LandmineBusters extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        instance = this;
-
         // ワールドのロード
         world = getServer().getWorld(WORLD_NAME);
         if ( world == null ) {
@@ -53,6 +50,10 @@ public class LandmineBusters extends JavaPlugin {
 
         // コンフィグのロード
         config = new LBConfig(this);
+
+        // メッセージをロードする
+        Messages.initialize(getFile(), getDataFolder(), getReleaseLang());
+        Messages.reload(config.getLang());
 
         // マネージャの生成
         manager = new GameSessionManager(this);
@@ -175,10 +176,20 @@ public class LandmineBusters extends JavaPlugin {
     }
 
     /**
-     * インスタンスを返す
-     * @return
+     * このプラグインのリリース先を返す
+     * @return en または ja (pom.xml の release.lang の内容が返される)
      */
-    protected static LandmineBusters getInstance() {
-        return instance;
+    protected String getReleaseLang() {
+        String[] descs = getDescription().getDescription().split(" ");
+        if ( descs.length <= 0 ) return "en";
+        return descs[descs.length - 1];
+    }
+
+    /**
+     * このプラグインのインスタンスを返す
+     * @return プラグインのインスタンス
+     */
+    public static LandmineBusters getInstance() {
+        return (LandmineBusters)Bukkit.getPluginManager().getPlugin("LandmineBusters");
     }
 }

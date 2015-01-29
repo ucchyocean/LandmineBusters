@@ -7,6 +7,7 @@ package org.bitbucket.ucchy.lb.game;
 
 import org.bitbucket.ucchy.lb.Difficulty;
 import org.bitbucket.ucchy.lb.LandmineBusters;
+import org.bitbucket.ucchy.lb.Utility;
 import org.bitbucket.ucchy.lb.ranking.RankingDataManager;
 import org.bitbucket.ucchy.lb.ranking.RankingScoreData;
 import org.bukkit.Bukkit;
@@ -380,7 +381,11 @@ public class GameSession {
         RankingScoreData data = new RankingScoreData();
         data.setName(player.getName());
         data.setScore(point);
-        data.setUuid(player.getUniqueId());
+        if ( Utility.isCB178orLater() ) {
+            data.setUuid(player.getUniqueId().toString());
+        } else {
+            data.setUuid(player.getName());
+        }
 
         // ランキングを更新する
         RankingDataManager manager = parent.getRankingManager();

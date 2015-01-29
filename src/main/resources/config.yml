@@ -1,0 +1,24 @@
+# ${project.name} v${project.version}
+# @author     ucchy
+# @license    LGPLv3
+# @copyright  Copyright ucchy 2015
+
+# Difficulty Settings.
+# size -> field size.
+# mine -> landmine num.
+difficulty:
+  easy:
+    size: 10
+    mine: 5
+  normal:
+    size: 12
+    mine: 12
+  hard:
+    size: 15
+    mine: 30
+
+# Seconds to start game.
+startDelay: 5
+
+# The server announce of starting and results of games.
+announce: true

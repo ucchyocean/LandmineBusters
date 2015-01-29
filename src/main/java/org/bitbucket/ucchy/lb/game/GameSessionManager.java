@@ -7,7 +7,6 @@ package org.bitbucket.ucchy.lb.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.UUID;
 
 import org.bitbucket.ucchy.lb.Difficulty;
 import org.bitbucket.ucchy.lb.LandmineBusters;
@@ -20,7 +19,7 @@ import org.bukkit.entity.Player;
 public class GameSessionManager {
 
     private LandmineBusters parent;
-    private HashMap<UUID, GameSession> sessions;
+    private HashMap<String, GameSession> sessions;
 
     /**
      * コンストラクタ
@@ -28,7 +27,7 @@ public class GameSessionManager {
      */
     public GameSessionManager(LandmineBusters parent) {
         this.parent = parent;
-        sessions = new HashMap<UUID, GameSession>();
+        sessions = new HashMap<String, GameSession>();
     }
 
     /**
@@ -38,8 +37,8 @@ public class GameSessionManager {
      */
     public boolean isPlayerPrepare(Player player) {
 
-        if ( sessions.containsKey(player.getUniqueId()) ) {
-            return sessions.get(player.getUniqueId()).getPhase() ==
+        if ( sessions.containsKey(player.getName()) ) {
+            return sessions.get(player.getName()).getPhase() ==
                     GameSessionPhase.PREPARE;
         }
         return false;
@@ -52,8 +51,8 @@ public class GameSessionManager {
      */
     public boolean isPlayerInGame(Player player) {
 
-        if ( sessions.containsKey(player.getUniqueId()) ) {
-            return sessions.get(player.getUniqueId()).getPhase() ==
+        if ( sessions.containsKey(player.getName()) ) {
+            return sessions.get(player.getName()).getPhase() ==
                     GameSessionPhase.IN_GAME;
         }
         return false;
@@ -65,7 +64,7 @@ public class GameSessionManager {
      * @return ゲームセッション
      */
     public GameSession getSession(Player player) {
-        return sessions.get(player.getUniqueId());
+        return sessions.get(player.getName());
     }
 
     /**
@@ -74,7 +73,7 @@ public class GameSessionManager {
      */
     public void removeSession(Player player) {
         if ( isPlayerInGame(player) ) {
-            sessions.remove(player.getUniqueId());
+            sessions.remove(player.getName());
         }
     }
 
@@ -89,7 +88,7 @@ public class GameSessionManager {
     public GameSession makeNewSession(Player player,
             int size, int mine, Difficulty difficulty) {
         GameSession session = new GameSession(parent, player, size, mine, difficulty);
-        sessions.put(player.getUniqueId(), session);
+        sessions.put(player.getName(), session);
         return session;
     }
 
