@@ -1,0 +1,39 @@
+# ${project.name} v${project.version}
+# @author     ucchy
+# @license    LGPLv3
+# @copyright  Copyright ucchy 2015
+
+PermissionDeniedCommand: '&cパーミッションが無いため、実行できません。'
+
+ErrorInGameCommand: '&cこのコマンドはゲーム内から実行してください。'
+ErrorAlreadyStartGame: '&cあなたは既にゲームを開始しています。'
+ErrorNotInGame: '&cあなたはゲーム中ではありません。'
+ErrorNowPreparing: '&cあなたはゲーム開始待機中のため、キャンセルできません。'
+
+InformationReloaded: 'コンフィグをリロードしました。'
+InformationPreparing: 'ゲームの開始準備をしています...'
+InformationPreparingDelay: '&c%delay&f秒間動かずにお待ちください...'
+InformationGameCancelled: 'ゲームがキャンセルされました。'
+
+InformationStartGame1: '&6Welcome to Landmine Busters !!'
+InformationStartGame2: '&fフィールドに埋まっている%num個の地雷の上に、レッドストーントーチを立ててください。'
+InformationStartGame3: '&f経験値バーは一番近い地雷との距離を、レベルは周囲のマスにある地雷の個数を示します。'
+InformationEndGameWin: '&6ゲームに勝利しました！'
+InformationEndGameLose: '&6地雷を踏んでしまった。。。'
+InformationEndGameLoseFall: '&6落下してしまった。。。'
+
+InformationResultTitle: '==========リザルト=========='
+InformationResultWin: '%difficulty &6クリア！！'
+InformationResultLose: '%difficulty &3失敗。。。'
+InformationResultTime: 'タイム: %second秒 &a(+%pointP)'
+InformationResultMine: '除去した地雷: %mine個 &a(+%pointP)'
+InformationResultTotal: '&6今回のスコア: &a%pointP'
+InformationResultUpdated: '&6自己ベストを更新しました！'
+InformationResultYourRank: 'あなたの現在のランキング: &d%rank位 &a(%pointP)'
+InformationResultLastLine: '=========================='
+
+AnnouncePrefix: '&6[LB] '
+AnnounceStartGame: '&7%nameさんが地雷探知ゲーム%difficultyを開始しました'
+AnnounceEndGameWin: '&7%nameさんが地雷探知ゲームを&6クリア&7しました！'
+AnnounceEndGameLose: '&7%nameさんが地雷探知ゲームで失敗しました。。。'
+AnnounceResult: '難易度：%difficulty, スコア：%scoreP'

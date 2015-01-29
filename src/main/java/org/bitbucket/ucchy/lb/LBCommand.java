@@ -97,13 +97,13 @@ public class LBCommand implements TabExecutor {
 
         // パーミッションチェック
         if ( !sender.hasPermission(PERMISSION + "start") ) {
-            sender.sendMessage(ChatColor.RED + "パーミッションが無いため実行できません。");
+            sender.sendMessage(Messages.get("PermissionDeniedCommand"));
             return true;
         }
 
         // ゲーム外から実行された場合はエラー終了する
         if ( !(sender instanceof Player) ) {
-            sender.sendMessage(ChatColor.RED + "このコマンドはゲーム内から実行してください。");
+            sender.sendMessage(Messages.get("ErrorInGameCommand"));
             return true;
         }
 
@@ -112,7 +112,7 @@ public class LBCommand implements TabExecutor {
 
         // 既にセッション中ならエラー終了する
         if ( manager.isPlayerInGame(player) ) {
-            sender.sendMessage(ChatColor.RED + "あなたは既にゲームを開始しています。");
+            sender.sendMessage(Messages.get("ErrorAlreadyStartGame"));
             return true;
         }
 
@@ -140,7 +140,7 @@ public class LBCommand implements TabExecutor {
 
         // ゲーム外から実行された場合はエラー終了する
         if ( !(sender instanceof Player) ) {
-            sender.sendMessage(ChatColor.RED + "このコマンドはゲーム内から実行してください。");
+            sender.sendMessage(Messages.get("ErrorInGameCommand"));
             return true;
         }
 
@@ -149,13 +149,13 @@ public class LBCommand implements TabExecutor {
 
         // セッション中じゃないならエラー終了する
         if ( !manager.isPlayerInGame(player) ) {
-            sender.sendMessage(ChatColor.RED + "あなたはゲーム中ではありません。");
+            sender.sendMessage(Messages.get("ErrorNotInGame"));
             return true;
         }
 
         // 準備中ならエラー終了する
         if ( manager.isPlayerPrepare(player) ) {
-            sender.sendMessage(ChatColor.RED + "あなたはゲーム開始待機中のため、キャンセルできません。");
+            sender.sendMessage(Messages.get("ErrorNowPreparing"));
             return true;
         }
 
@@ -179,7 +179,7 @@ public class LBCommand implements TabExecutor {
 
         // パーミッションチェック
         if ( !sender.hasPermission(PERMISSION + "rank") ) {
-            sender.sendMessage(ChatColor.RED + "パーミッションが無いため実行できません。");
+            sender.sendMessage(Messages.get("PermissionDeniedCommand"));
             return true;
         }
 
@@ -230,22 +230,22 @@ public class LBCommand implements TabExecutor {
 
     /**
      * reloadコマンド
-     * @param sender 
-     * @param command 
-     * @param label 
-     * @param args 
+     * @param sender
+     * @param command
+     * @param label
+     * @param args
      * @return
      */
     private boolean doReload(CommandSender sender, Command command, String label, String[] args) {
-        
+
         // パーミッションチェック
         if ( !sender.hasPermission(PERMISSION + "reload") ) {
-            sender.sendMessage(ChatColor.RED + "パーミッションが無いため実行できません。");
+            sender.sendMessage(Messages.get("PermissionDeniedCommand"));
             return true;
         }
 
         LandmineBusters.getInstance().getLBConfig().reloadConfig();
-        sender.sendMessage(ChatColor.AQUA + "コンフィグをリロードしました。");
+        sender.sendMessage(Messages.get("InformationReloaded"));
         return true;
     }
 

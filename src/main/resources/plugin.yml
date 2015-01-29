@@ -1,7 +1,7 @@
 name: ${project.name}
 version: ${project.version}
 main: org.bitbucket.ucchy.lb.LandmineBusters
-description: LandmineBusters minigame plugin
+description: LandmineBusters minigame plugin for ${release.lang}
 author: ucchy
 
 commands:

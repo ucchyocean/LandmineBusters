@@ -7,11 +7,11 @@ package org.bitbucket.ucchy.lb.game;
 
 import org.bitbucket.ucchy.lb.Difficulty;
 import org.bitbucket.ucchy.lb.LandmineBusters;
+import org.bitbucket.ucchy.lb.Messages;
 import org.bitbucket.ucchy.lb.Utility;
 import org.bitbucket.ucchy.lb.ranking.RankingDataManager;
 import org.bitbucket.ucchy.lb.ranking.RankingScoreData;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -76,7 +76,7 @@ public class GameSession {
 
         phase = GameSessionPhase.PREPARE;
 
-        player.sendMessage("ゲームの開始準備をしています...");
+        player.sendMessage(Messages.get("InformationPreparing"));
 
         // グリッドをマネージャから取得する
         int[] grid = parent.getGameSessionManager().getOpenGrid();
@@ -98,8 +98,8 @@ public class GameSession {
 
         } else {
 
-            player.sendMessage(ChatColor.RED + "" + delay +
-                    ChatColor.WHITE + "秒間動かずにお待ちください...");
+            player.sendMessage(Messages.get(
+                    "InformationPreparingDelay", "%delay", delay));
 
             // 指定の秒数後にゲームを開始する
             delayTimer = new BukkitRunnable() {
@@ -145,20 +145,18 @@ public class GameSession {
         startTime = System.currentTimeMillis();
 
         // メッセージを流す
-        player.sendMessage(ChatColor.GOLD +
-                "Welcome to Landmine Busters !!");
-        player.sendMessage(
-                "フィールドに埋まっている地雷にレッドストーントーチを立てて、"
-                + "全て無効化してください。");
-        player.sendMessage(
-                "経験値バーは一番近い地雷との距離を、"
-                + "レベルは周囲のマスにある地雷の個数を示します。");
+        player.sendMessage(Messages.get("InformationStartGame1"));
+        player.sendMessage(Messages.get("InformationStartGame2",
+                "%num", field.getRemainCount()));
+        player.sendMessage(Messages.get("InformationStartGame3"));
 
         // アナウンスを流す
         if ( parent.getLBConfig().isAnnounce() ) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
-                    ChatColor.GRAY + player.getName() + "さんが地雷探知ゲーム" +
-                    difficulty.getName() + "を開始しました");
+            String message = Messages.get("AnnouncePrefix")
+                    + Messages.get("AnnounceStartGame",
+                            new String[]{"%name", "%difficulty"},
+                            new String[]{player.getName(), difficulty.getName()});
+            Bukkit.broadcastMessage(message);
         }
     }
 
@@ -179,19 +177,20 @@ public class GameSession {
         parent.getGameSessionManager().removeSession(player);
 
         // メッセージを流す
-        player.sendMessage("ゲームに勝利しました！");
+        player.sendMessage(Messages.get("InformationEndGameWin"));
 
         // リザルトを表示する
         RankingScoreData score = sendResult(true);
 
         // アナウンスを流す
         if ( parent.getLBConfig().isAnnounce() ) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
-                    ChatColor.GRAY + player.getName() + "さんが地雷探知ゲームを" +
-                    ChatColor.GOLD + "クリア" + ChatColor.GRAY + "しました！");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
-                    ChatColor.GRAY + "難易度：" + difficulty.getName() +
-                    ", スコア：" + score.getScore() + "P");
+            String pre = Messages.get("AnnouncePrefix");
+            Bukkit.broadcastMessage(
+                    pre + Messages.get("AnnounceEndGameWin", "%name", player.getName()));
+            Bukkit.broadcastMessage(
+                    pre + Messages.get("AnnounceResult",
+                            new String[]{"%difficulty", "%score"},
+                            new String[]{difficulty.getName(), score.getScore() + ""}));
         }
     }
 
@@ -214,12 +213,13 @@ public class GameSession {
 
         // アナウンスを流す
         if ( parent.getLBConfig().isAnnounce() ) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
-                    ChatColor.GRAY + player.getName() + "さんが地雷探知ゲームで" +
-                    "失敗しました。。。");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[LB] " +
-                    ChatColor.GRAY + "難易度：" + difficulty.getName() +
-                    ", スコア：" + score.getScore() + "P");
+            String pre = Messages.get("AnnouncePrefix");
+            Bukkit.broadcastMessage(
+                    pre + Messages.get("AnnounceEndGameLose", "%name", player.getName()));
+            Bukkit.broadcastMessage(
+                    pre + Messages.get("AnnounceResult",
+                            new String[]{"%difficulty", "%score"},
+                            new String[]{difficulty.getName(), score.getScore() + ""}));
         }
 
         // リスポーン地点を返す（プレイヤー死亡中はテレポートできないため）
@@ -253,7 +253,7 @@ public class GameSession {
         parent.getGameSessionManager().removeSession(player);
 
         // メッセージを流す
-        player.sendMessage("ゲームがキャンセルされました。");
+        player.sendMessage(Messages.get("InformationGameCancelled"));
     }
 
     /**
@@ -353,29 +353,27 @@ public class GameSession {
         if ( !isClear || timePoint < 0 ) timePoint = 0;
         point += timePoint;
 
-        // 踏破率ポイントを加算
-//        double stepOnPercent = field.getStepOnPercentage();
-//        int stepOnPoint = (int)(stepOnPercent * 100);
-//        point += stepOnPoint;
-
         // 地雷除去ポイントを加算
-        int deactive = field.deactiveCount();
+        int deactive = field.getDeactiveCount();
         int deactivePoint = deactive * 10;
         point += deactivePoint;
 
-        player.sendMessage("==========リザルト==========");
+        player.sendMessage(Messages.get("InformationResultTitle"));
         if ( isClear ) {
-            player.sendMessage(difficulty.getName() + " " + ChatColor.RED + "クリア！！");
+            player.sendMessage(Messages.get(
+                    "InformationResultWin", "%difficulty", difficulty.getName()));
         } else {
-            player.sendMessage(difficulty.getName() + " " + ChatColor.DARK_AQUA + "失敗。。。");
+            player.sendMessage(Messages.get(
+                    "InformationResultLose", "%difficulty", difficulty.getName()));
         }
-        player.sendMessage(String.format(
-                "タイム: %d秒 " + ChatColor.GREEN + "(+%dP)", time, timePoint));
-//        player.sendMessage(String.format(
-//                "踏破率: %.1f％ " + ChatColor.GREEN + "(+%dP)", stepOnPercent*100, stepOnPoint));
-        player.sendMessage(String.format(
-                "除去した地雷: %d個 " + ChatColor.GREEN + "(+%dP)", deactive, deactivePoint));
-        player.sendMessage(ChatColor.GOLD + "今回のスコア: " + ChatColor.GREEN + point + "P");
+        player.sendMessage(Messages.get("InformationResultTime",
+                new String[]{"%second", "%point"},
+                new String[]{time + "", timePoint + ""}));
+        player.sendMessage(Messages.get("InformationResultMine",
+                new String[]{"%mine", "%point"},
+                new String[]{deactive + "", deactivePoint + ""}));
+        player.sendMessage(Messages.get(
+                "InformationResultTotal", "%pointP", point));
 
         // スコアデータを作成する
         RankingScoreData data = new RankingScoreData();
@@ -390,15 +388,15 @@ public class GameSession {
         // ランキングを更新する
         RankingDataManager manager = parent.getRankingManager();
         if ( manager.getData(difficulty).updateData(data) ) {
-            player.sendMessage(ChatColor.GOLD + "自己ベストを更新しました！");
+            player.sendMessage(Messages.get("InformationResultUpdated"));
         }
         int num = manager.getRankingNum(player, difficulty);
         int best = manager.getScore(player, difficulty);
-        player.sendMessage("あなたの現在のランキング: " +
-                ChatColor.LIGHT_PURPLE + num + "位" +
-                ChatColor.GREEN + "(" + best + "P)");
+        player.sendMessage(Messages.get("InformationResultYourRank",
+                new String[]{"%rank", "%point"},
+                new String[]{num + "", best + ""}));
 
-        player.sendMessage("==========================");
+        player.sendMessage(Messages.get("InformationResultLastLine"));
 
         return data;
     }

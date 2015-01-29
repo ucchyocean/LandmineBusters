@@ -40,16 +40,21 @@ public class LBConfig {
             parent.getDataFolder().mkdirs();
         }
 
+        String releaseLang = parent.getReleaseLang();
         File file = new File(parent.getDataFolder(), "config.yml");
         if ( !file.exists() ) {
-            Utility.copyFileFromJar(
-                    parent.getJarFile(), file, "config_ja.yml", false);
+            if ( releaseLang.equals("ja") ) {
+                Utility.copyFileFromJar(
+                        parent.getJarFile(), file, "config_ja.yml", false);
+            } else {
+                Utility.copyFileFromJar(
+                        parent.getJarFile(), file, "config.yml", false);
+            }
         }
 
         parent.reloadConfig();
         FileConfiguration conf = parent.getConfig();
 
-        String releaseLang = LandmineBusters.getInstance().getReleaseLang();
         lang = conf.getString("lang", releaseLang);
 
         difficulty = new HashMap<Difficulty, LBDifficultySetting>();

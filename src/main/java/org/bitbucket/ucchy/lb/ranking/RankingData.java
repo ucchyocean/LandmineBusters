@@ -154,12 +154,13 @@ public class RankingData {
      */
     public int getRankingNum(Player player) {
 
-        if ( !datas.containsKey(player.getUniqueId()) ) {
+        String uuid = getID(player);
+        if ( !datas.containsKey(uuid) ) {
             return 99999;
         }
 
         for ( int index = 0; index < ranking.size(); index++ ) {
-            if ( ranking.get(index).getUuid().equals(player.getUniqueId()) ) {
+            if ( ranking.get(index).getUuid().equals(uuid) ) {
                 return index + 1;
             }
         }
@@ -173,9 +174,18 @@ public class RankingData {
      */
     public int getScore(Player player) {
 
-        if ( !datas.containsKey(player.getUniqueId()) ) {
+        String uuid = getID(player);
+        if ( !datas.containsKey(uuid) ) {
             return 0;
         }
-        return datas.get(player.getUniqueId()).getScore();
+        return datas.get(uuid).getScore();
+    }
+
+    private static String getID(Player player) {
+        if ( Utility.isCB178orLater() ) {
+            return player.getUniqueId().toString();
+        } else {
+            return player.getName();
+        }
     }
 }

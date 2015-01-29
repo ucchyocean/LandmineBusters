@@ -1,0 +1,39 @@
+# ${project.name} v${project.version}
+# @author     ucchy
+# @license    LGPLv3
+# @copyright  Copyright ucchy 2015
+
+PermissionDeniedCommand: '&cYou don''t have a permission.'
+
+ErrorInGameCommand: '&cYou cannot run this command from console.'
+ErrorAlreadyStartGame: '&cYou started a game already.'
+ErrorNotInGame: '&cYou are not in game.'
+ErrorNowPreparing: '&cBecause your game is preparing now, you cannot cancel your game.'
+
+InformationReloaded: 'Reloaded configuration.'
+InformationPreparing: 'Preparing to start game...'
+InformationPreparingDelay: 'Don''t move and wait &c%delay&f seconds.'
+InformationGameCancelled: 'Game was cancelled.'
+
+InformationStartGame1: '&6Welcome to Landmine Busters!!'
+InformationStartGame2: '&f%num landmines buried in the field. Put a redstone torch on all landmines.'
+InformationStartGame3: '&fExp bar indicates the distance between the closest mine. Level indicates the number of mines in the 8 blocks around.'
+InformationEndGameWin: '&6You win!!'
+InformationEndGameLose: '&6You stepped on a land mine...'
+InformationEndGameLoseFall: '&6You fell from the game field...'
+
+InformationResultTitle: '==========Result=========='
+InformationResultWin: '%difficulty &6Win!!'
+InformationResultLose: '%difficulty &3Lose...'
+InformationResultTime: 'Time: %second Seconds &a(+%pointP)'
+InformationResultMine: 'Deactivated Mines: %mine &a(+%pointP)'
+InformationResultTotal: '&6Total Score: &a%pointP'
+InformationResultUpdated: '&6You have updated the personal best!!'
+InformationResultYourRank: 'Your position: rank &d%rank &a(%pointP)'
+InformationResultLastLine: '=========================='
+
+AnnouncePrefix: '&6[LB] '
+AnnounceStartGame: '&7%name has started Landmine Busters %difficulty!'
+AnnounceEndGameWin: '&6%name wins Landmine Busters game !'
+AnnounceEndGameLose: '&7%name lose Landmine Busters game...'
+AnnounceResult: '&7difficulty: %difficulty, score: %scoreP'
