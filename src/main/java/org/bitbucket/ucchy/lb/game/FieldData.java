@@ -114,9 +114,9 @@ public class FieldData {
         Block signBlock = world.getBlockAt((startx+size), origin.getBlockY()+1, (startz+size-2));
         signBlock.setType(Material.SIGN_POST);
         Sign sign = (Sign)signBlock.getState();
-        sign.setLine(0, "難易度: " + difficulty.getName());
+        sign.setLine(0, "Difficulty: " + difficulty.getName());
         if ( top != null ) {
-            sign.setLine(1, "現在のトップ:");
+            sign.setLine(1, "Champion:  ");
             sign.setLine(2, top.getName());
             sign.setLine(3, top.getScore() + "P");
         }
@@ -243,8 +243,16 @@ public class FieldData {
      * 無効化した地雷の個数を返す
      * @return 無効化した地雷の個数
      */
-    public int deactiveCount() {
+    public int getDeactiveCount() {
         return mines.size() - actives.size();
+    }
+
+    /**
+     * 残りの地雷の個数を返す
+     * @return 残りの地雷の個数
+     */
+    public int getRemainCount() {
+        return actives.size();
     }
 
     /**
