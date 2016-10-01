@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Locale;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -27,6 +28,7 @@ import org.bukkit.OfflinePlayer;
 public class Utility {
 
     private static Boolean isCB178orLaterCache;
+    private static Boolean isCB19orLaterCache;
 
     /**
      * jarファイルの中に格納されているファイルを、jarファイルの外にコピーするメソッド
@@ -67,7 +69,13 @@ public class Utility {
 
             } else {
                 reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                writer = new BufferedWriter(new OutputStreamWriter(fos));
+
+                // CB190以降は、書き出すファイルエンコードにUTF-8を強制する。
+                if ( isCB19orLater() ) {
+                    writer = new BufferedWriter(new OutputStreamWriter(fos, "UTF-8"));
+                } else {
+                    writer = new BufferedWriter(new OutputStreamWriter(fos));
+                }
 
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -116,18 +124,46 @@ public class Utility {
     }
 
     /**
+     * 指定されたプレイヤー名のオフラインプレイヤーを取得する。
+     * @param name プレイヤー名
+     * @return オフラインプレイヤー
+     */
+    @SuppressWarnings("deprecation")
+    public static OfflinePlayer getOfflinePlayer(String name) {
+        return Bukkit.getOfflinePlayer(name);
+    }
+    /**
      * 現在動作中のCraftBukkitが、v1.7.8 以上かどうかを確認する
      * @return v1.7.8以上ならtrue、そうでないならfalse
      */
     public static boolean isCB178orLater() {
-
-        if ( isCB178orLaterCache != null ) {
-            return isCB178orLaterCache;
+        if ( isCB178orLaterCache == null ) {
+            isCB178orLaterCache = isUpperVersion(Bukkit.getBukkitVersion(), "1.7.8");
         }
+        return isCB178orLaterCache;
+    }
 
-        int[] borderNumbers = {1, 7, 8};
+    /**
+     * 現在動作中のCraftBukkitが、v1.9 以上かどうかを確認する
+     * @return v1.9以上ならtrue、そうでないならfalse
+     */
+    public static boolean isCB19orLater() {
+        if ( isCB19orLaterCache == null ) {
+            isCB19orLaterCache = isUpperVersion(Bukkit.getBukkitVersion(), "1.9");
+        }
+        return isCB19orLaterCache;
+    }
 
-        String version = Bukkit.getBukkitVersion();
+    /**
+     * 指定されたバージョンが、基準より新しいバージョンかどうかを確認する
+     * @param version 確認するバージョン
+     * @param border 基準のバージョン
+     * @return 基準より確認対象の方が新しいバージョンかどうか<br/>
+     * ただし、無効なバージョン番号（数値でないなど）が指定された場合はfalseに、
+     * 2つのバージョンが完全一致した場合はtrueになる。
+     */
+    private static boolean isUpperVersion(String version, String border) {
+
         int hyphen = version.indexOf("-");
         if ( hyphen > 0 ) {
             version = version.substring(0, hyphen);
@@ -136,40 +172,43 @@ public class Utility {
         String[] versionArray = version.split("\\.");
         int[] versionNumbers = new int[versionArray.length];
         for ( int i=0; i<versionArray.length; i++ ) {
-            if ( !versionArray[i].matches("[0-9]+") ) {
-                isCB178orLaterCache = false;
+            if ( !versionArray[i].matches("[0-9]+") )
                 return false;
-            }
             versionNumbers[i] = Integer.parseInt(versionArray[i]);
+        }
+
+        String[] borderArray = border.split("\\.");
+        int[] borderNumbers = new int[borderArray.length];
+        for ( int i=0; i<borderArray.length; i++ ) {
+            if ( !borderArray[i].matches("[0-9]+") )
+                return false;
+            borderNumbers[i] = Integer.parseInt(borderArray[i]);
         }
 
         int index = 0;
         while ( (versionNumbers.length > index) && (borderNumbers.length > index) ) {
             if ( versionNumbers[index] > borderNumbers[index] ) {
-                isCB178orLaterCache = true;
                 return true;
             } else if ( versionNumbers[index] < borderNumbers[index] ) {
-                isCB178orLaterCache = false;
                 return false;
             }
             index++;
         }
         if ( borderNumbers.length == index ) {
-            isCB178orLaterCache = true;
             return true;
         } else {
-            isCB178orLaterCache = false;
             return false;
         }
     }
 
     /**
-     * 指定された名前のオフラインプレイヤーを取得する
-     * @param name プレイヤー名
-     * @return オフラインプレイヤー
+     * 動作環境の言語設定を取得する。日本語環境なら ja、英語環境なら en が返される。
+     * @return 動作環境の言語
      */
-    @SuppressWarnings("deprecation")
-    public static OfflinePlayer getOfflinePlayer(String name) {
-        return Bukkit.getOfflinePlayer(name);
+    public static String getDefaultLocaleLanguage() {
+        Locale locale = Locale.getDefault();
+        if ( locale == null ) return "en";
+        if ( locale.getLanguage().equals("zh") ) return locale.toString();
+        return locale.getLanguage();
     }
 }

@@ -13,6 +13,7 @@
   <files>
     <file>
       <source>target/LandmineBusters.jar</source>
+      <destName>plugins/LandmineBusters.jar</destName>
     </file>
   </files>
 

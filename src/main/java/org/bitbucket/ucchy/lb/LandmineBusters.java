@@ -52,7 +52,7 @@ public class LandmineBusters extends JavaPlugin {
         config = new LBConfig(this);
 
         // メッセージをロードする
-        Messages.initialize(getFile(), getDataFolder(), getReleaseLang());
+        Messages.initialize(getFile(), getDataFolder(), Utility.getDefaultLocaleLanguage());
         Messages.reload(config.getLang());
 
         // マネージャの生成
@@ -173,16 +173,6 @@ public class LandmineBusters extends JavaPlugin {
      */
     protected File getJarFile() {
         return getFile();
-    }
-
-    /**
-     * このプラグインのリリース先を返す
-     * @return en または ja (pom.xml の release.lang の内容が返される)
-     */
-    protected String getReleaseLang() {
-        String[] descs = getDescription().getDescription().split(" ");
-        if ( descs.length <= 0 ) return "en";
-        return descs[descs.length - 1];
     }
 
     /**

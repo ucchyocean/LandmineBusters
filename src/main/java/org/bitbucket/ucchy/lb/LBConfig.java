@@ -40,7 +40,7 @@ public class LBConfig {
             parent.getDataFolder().mkdirs();
         }
 
-        String releaseLang = parent.getReleaseLang();
+        String releaseLang = Utility.getDefaultLocaleLanguage();
         File file = new File(parent.getDataFolder(), "config.yml");
         if ( !file.exists() ) {
             if ( releaseLang.equals("ja") ) {

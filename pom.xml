@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitbucket.ucchy</groupId>
   <artifactId>LandmineBusters</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 
   <licenses>
     <license>
@@ -14,7 +14,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <release.lang>ja</release.lang>
   </properties>
 
   <distributionManagement>
@@ -27,6 +26,7 @@
 
   <build>
     <finalName>${project.artifactId}</finalName>
+    <defaultGoal>clean deploy</defaultGoal>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -37,7 +37,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.5.1</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
@@ -46,7 +46,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2.1</version>
+        <version>2.6</version>
         <configuration>
           <finalName>${project.artifactId}-${project.version}</finalName>
           <descriptors>
@@ -67,9 +67,9 @@
 
   <repositories>
     <repository>
-      <id>bukkit-repo</id>
-      <name>Craft Bukkit Maven Repository</name>
-      <url>http://repo.bukkit.org/content/groups/public</url>
+      <id>spigot-repo</id>
+      <name>Spigot Maven Repository</name>
+      <url>https://hub.spigotmc.org/nexus/content/groups/public</url>
     </repository>
   </repositories>
 
@@ -77,7 +77,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.7.9-R0.2</version>
+      <version>1.10.2-R0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
