@@ -12,6 +12,7 @@ import org.bitbucket.ucchy.lb.game.GameSessionManager;
 import org.bitbucket.ucchy.lb.ranking.RankingDataManager;
 import org.bitbucket.ucchy.lb.ranking.RankingScoreData;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -115,6 +116,9 @@ public class LBCommand implements TabExecutor {
             sender.sendMessage(Messages.get("ErrorAlreadyStartGame"));
             return true;
         }
+
+        // ゲームモードを強制変更
+        player.setGameMode(GameMode.SURVIVAL);
 
         // セッションの作成
         Difficulty difficulty = Difficulty.NORMAL;

@@ -26,3 +26,9 @@ startDelay: 5
 
 # ゲームの開始と終了を、サーバー全体にアナウンスするかどうかを設定できます。
 announce: true
+
+# ゲームオーバー時のエフェクトの種類。
+# BOMB: 爆発します。結構心臓に悪いです。
+# FIREWORK: 花火を爆発させます。
+# NONE: エフェクト無しにします。
+gameoverEffect: FIREWORK

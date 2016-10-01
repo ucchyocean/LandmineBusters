@@ -10,10 +10,15 @@ import java.util.UUID;
 
 import org.bitbucket.ucchy.lb.game.GameSession;
 import org.bitbucket.ucchy.lb.game.GameSessionManager;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,7 +33,9 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * LandmineBustersのリスナークラス
@@ -74,8 +81,33 @@ public class LBListener implements Listener {
         // 現在位置に地雷があるかどうかを確認する。あったらゲームオーバー
         if ( session.getField().isLandmineExist(location) ) {
 
-            // 爆発エフェクト＆爆死
-            location.getWorld().createExplosion(location, 0);
+            // 爆発エフェクト
+            GameoverEffect effect =
+                    LandmineBusters.getInstance().getLBConfig().getGameoverEffect();
+            if ( effect == GameoverEffect.BOMB ) {
+                location.getWorld().createExplosion(location, 0);
+            } else if ( effect == GameoverEffect.FIREWORK ) {
+                final Firework firework = (Firework)location.getWorld().spawnEntity(
+                        player.getEyeLocation(), EntityType.FIREWORK);
+                FireworkMeta meta = firework.getFireworkMeta();
+                FireworkEffect feffect = FireworkEffect.builder()
+                        .flicker(true)
+                        .withColor(Color.WHITE)
+                        .withFade(Color.RED)
+                        .with(Type.BALL_LARGE)
+                        .trail(true)
+                        .build();
+                meta.addEffect(feffect);
+                meta.setPower(1);
+                firework.setFireworkMeta(meta);
+                new BukkitRunnable() {
+                    public void run() {
+                        firework.detonate();
+                    }
+                }.runTaskLater(LandmineBusters.getInstance(), 1);
+            }
+
+            // ダメージを与えてゲームオーバー画面にする
             player.getInventory().clear();
             player.setLevel(0);
             player.setExp(0);

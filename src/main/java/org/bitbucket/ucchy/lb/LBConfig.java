@@ -21,6 +21,7 @@ public class LBConfig {
     private HashMap<Difficulty, LBDifficultySetting> difficulty;
     private int startDelay;
     private boolean announce;
+    private GameoverEffect gameoverEffect;
 
     /**
      * コンストラクタ
@@ -40,10 +41,10 @@ public class LBConfig {
             parent.getDataFolder().mkdirs();
         }
 
-        String releaseLang = Utility.getDefaultLocaleLanguage();
+        String localeLang = Utility.getDefaultLocaleLanguage();
         File file = new File(parent.getDataFolder(), "config.yml");
         if ( !file.exists() ) {
-            if ( releaseLang.equals("ja") ) {
+            if ( localeLang.equals("ja") ) {
                 Utility.copyFileFromJar(
                         parent.getJarFile(), file, "config_ja.yml", false);
             } else {
@@ -55,7 +56,7 @@ public class LBConfig {
         parent.reloadConfig();
         FileConfiguration conf = parent.getConfig();
 
-        lang = conf.getString("lang", releaseLang);
+        lang = conf.getString("lang", localeLang);
 
         difficulty = new HashMap<Difficulty, LBDifficultySetting>();
         for ( Difficulty dif : Difficulty.values() ) {
@@ -71,6 +72,9 @@ public class LBConfig {
         startDelay = conf.getInt("startDelay", 5);
 
         announce = conf.getBoolean("announce", true);
+
+        gameoverEffect = GameoverEffect.getFromString(
+                conf.getString("gameoverEffect"), GameoverEffect.FIREWORK);
 
         // 値のチェック
         for ( Difficulty dif : difficulty.keySet() ) {
@@ -110,4 +114,12 @@ public class LBConfig {
     public boolean isAnnounce() {
         return announce;
     }
+
+    /**
+     * @return gameoverEffect
+     */
+    public GameoverEffect getGameoverEffect() {
+        return gameoverEffect;
+    }
+
 }
